@@ -1,9 +1,9 @@
 #' `fitness_f_kdr` returns relative fitness based on the average number of oviposition events that females anopheles 
 #' of the three genotypes for the kdr mutation is expected to performed during its lifetime
 #'
-#' @param Pref_kdr a vector oz size three of which elements are the preference for protected LLIN users of the three genotypes (in the following order : RR, RS, SS)
-#' @param m1p_kdr a vector oz size three of which elements are the pre-bite mortality of the three genotypes (in the following order : RR, RS, SS) when entering a hut with a LLIN protected individual
-#' @param m2p_kdr a vector oz size three of which elements are the pre-bite mortality of the three genotypes (in the following order : RR, RS, SS) when entering a hut with an unprotected individual
+#' @param Pref_kdr a vector of size three of which elements are the preference for protected LLIN users of the three genotypes (in the following order : RR, RS, SS)
+#' @param m1p_kdr a vector of size three of which elements are the pre-bite mortality of the three genotypes (in the following order : RR, RS, SS) when entering a hut with a LLIN protected individual
+#' @param m2p_kdr a vector of size three of which elements are the pre-bite mortality of the three genotypes (in the following order : RR, RS, SS) when entering a hut with an unprotected individual
 #' @param success_not a vector oz size three of which elements are the success rate at penetrating through an holed untreated net (=1 if no net)
 #' @param success_net a vector oz size three of which elements are the success rate at penetrating through an holed LLIN
 #' @param biting_not a vector oz size three of which elements are the blood feeding success rate of pre-bite survivors in a hut with no (or untreated) net
