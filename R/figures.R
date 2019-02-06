@@ -3,13 +3,13 @@ library(tidyverse)
 library(popbio)
 
 
-p<- c(0.4,0.3,0.2)		      # preference for unprotected human (against protected human) = Nb of vector in the control hut / (Nb in the contral hut + Nb in the treated hut) (0.3 to 0.9)
+p<- c(0.6,0.7,0.8)		      # preference for LLIN protected human (against unprotected human) 
 Cov <- seq(0,1,by = 0.01)	  # coverage LLIN
 m <- seq(0,1,by = 0.01)     # pre-bite mortality
 f <- seq(0,1,by = 0.01)     # blood-succes rate ratio in pre-bite survivors (vs untreated)
 Behav <- seq(0,1,by = 0.01) # 
-ref_pref <- 0.5
-FUN <- VC_bincoef
+ref_pref <- 0.5							#
+FUN <- VLAIB
 
 ### graph lines RTP vs pref(x) and Ch(y) 
 
@@ -17,13 +17,13 @@ fig_cov <- function(ref_pref,a,b){
 RTP.fit <- expand.grid(x=a,y=b)
 for (i in 1:length(RTP.fit$x)){
   #RTP.fit$z1[i] <- fRTP(p=RTP.fit$x[i],Ch=RTP.fit$y[i],Ch2=RTP.fit$y[i],p2=ref_pref,FUN=VC_bincoef)
-  RTP.fit$z2[i] <- fRTP(100000, p=RTP.fit$x[i],Ch=RTP.fit$y[i],Ch2=RTP.fit$y[i],p2=ref_pref,FUN=FUN)
+  RTP.fit$z2[i] <- fRTP(100000, p=RTP.fit$x[i],Uh=RTP.fit$y[i],Uh2=RTP.fit$y[i],p2=ref_pref,FUN=FUN)
 }
 
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=y*100, y=-redVC*100)) + 
   xlab("LLIN Coverage (%)") + ylab("fold-reduction in vectorial capacity") +
-  geom_line(aes(linetype=as.factor(1-x))) +
+  geom_line(aes(linetype=as.factor(x))) +
   scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
@@ -33,7 +33,7 @@ fig <- ggplot(RTP.fit, aes(x=y*100, y=-redVC*100)) +
 return(fig)
 }
 fig_cov_1 <- fig_cov(0.5,p,Cov)
-fig_cov_2 <- fig_cov(0.7,p,Cov)
+fig_cov_2 <- fig_cov(0.3,p,Cov)
 
 
 ### graph lines RTP vs pref(x) and mortality(y)
