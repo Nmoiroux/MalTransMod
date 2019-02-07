@@ -1,13 +1,13 @@
 library(ggpubr)
 library(tidyverse)
-
+library(export)
 
 
 p<- c(0.6,0.7,0.8)		      # preference for LLIN protected human (against unprotected human) 
 Cov <- seq(0,1,by = 0.01)	  # coverage LLIN
 m <- seq(0,1,by = 0.01)     # pre-bite mortality
 f <- seq(0,1,by = 0.01)     # blood-succes rate ratio in pre-bite survivors (vs untreated)
-Behav <- seq(0,1,by = 0.01) # 
+Behav <- seq(0,1,by = 0.01) # proportion of exposure to bite during which ITN is in use
 ref_pref <- 0.5							#
 FUN <- VLAIB
 
@@ -93,12 +93,12 @@ for (i in 1:length(RTP.fit$x)){
 }
 
 
-RTP.fit$redVC <- -1/RTP.fit$z2
-fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=redVC)) + 
-  xlab("Exposure to bites when/where LLINs are not in use (%)") + ylab("fold-reduction in vectorial capacity") +
+RTP.fit$redVC <- 1-RTP.fit$z2
+fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
+  xlab("Exposure to bites when/where LLINs are in use (%)") + ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
   scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
-  xlim(0,100) + ylim(min(RTP.fit$redVC),-1)+
+  xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
   theme(axis.title.y = element_blank())#+
   #theme(axis.title.x = element_text(size = rel(1.2), angle = 00))
@@ -127,3 +127,13 @@ ggarrange(fig_cov_1 + rremove("legend"),
           fig_pii_2+ rremove("legend"),
           labels = c("A", "B", "C", "D", "E", "F", "G", "H"),
           ncol = 2, nrow = 4)
+
+# export all graphs in one ppt
+graph2ppt(fig_cov_1, file = "Rplot", append = FALSE)
+graph2ppt(fig_cov_2, file = "Rplot", append = TRUE)
+graph2ppt(fig_m_1, file = "Rplot", append = TRUE)
+graph2ppt(fig_m_2, file = "Rplot", append = TRUE)
+graph2ppt(fig_f_1, file = "Rplot", append = TRUE)
+graph2ppt(fig_f_2, file = "Rplot", append = TRUE)
+graph2ppt(fig_pii_1, file = "Rplot", append = TRUE)
+graph2ppt(fig_pii_2, file = "Rplot", append = TRUE)
