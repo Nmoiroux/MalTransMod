@@ -46,11 +46,11 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, m1u = 0.016, m1p = 0.5, m2u = 0.005
   S2p <- 1 - m2p            # post-bite survival in hut with LLIN protected people - Expression (20)
  
   fi_u  <- S1u * fi1_u      # Successful feeding probability when entering a hut with an unprotected human - Expression (12)
-  fi1_p <- fi1_u * RR_fi1   # successful feeding probability of pre-bite survivors on an LLIN protected host - Expression (22)
+  fi1_p <- fi1_u * RR_fi1   # successful feeding probability of pre-bite survivors on LLIN protected host - Expression (22)
   fi_p  <- S1p * fi1_p      # Successful feeding probability when entering a hut with an LLIN protected human- Expression (18)
   
-  D1u <- 1-fi1_u            # Diversion probability of pre-bite survivors on an unprotected host - Expression (11)
-  D1p <- 1-fi1_u*RR_fi1     # Diversion probability of pre-bite survivors on an LLIN protected host - Expression (17)
+  D1u <- 1-fi1_u            # Diversion probability of pre-bite survivors on unprotected host - Expression (11)
+  D1p <- 1-fi1_u*RR_fi1     # Diversion probability of pre-bite survivors on LLIN protected host - Expression (17)
   
   Du  <- S1u * D1u          # probability of diversion (HS next day) when entering a hut with an unprotected human  - Expression (13)
   Dp  <- S1p * D1p          # probability of postpone (HS next day) when entering a hut with a protected human  - Expression (19)
