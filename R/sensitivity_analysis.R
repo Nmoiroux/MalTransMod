@@ -1,6 +1,6 @@
 ### sensitivity analysis
 library(pse)
-
+library(tidyverse)
 
 
 ### modify fRTP function to be fed with all parameters of VLAIB function
@@ -132,6 +132,7 @@ newLHS <- LHS(modelRun, factors, 750, q, q.arg)
 
 
 ### define possible range of parameters from field data
+Data_EHT <- read.delim("data/Data_EHT.txt")
 
 
 boxplot(subset(Data_EHT, ITN=="no")$m1)
@@ -140,6 +141,7 @@ boxplot(subset(Data_EHT, ITN=="no")$m2)
 boxplot(subset(Data_EHT, ITN=="LLIN")$m2)
 boxplot(subset(Data_EHT, ITN=="no")$fi1)
 boxplot(subset(Data_EHT, ITN=="LLIN")$fi1)
+boxplot(subset(Data_EHT, ITN=="LLIN")$RR_fi1)
 
 hist(subset(Data_EHT, ITN=="no")$m1)
 hist(subset(Data_EHT, ITN=="LLIN")$m1)
@@ -148,6 +150,14 @@ hist(subset(Data_EHT, ITN=="LLIN")$m2)
 hist(subset(Data_EHT, ITN=="no")$fi1)
 hist(subset(Data_EHT, ITN=="LLIN")$fi1)
 
+
+plot_Data_EHT <- Data_EHT[,c(1:3,11:14)] %>% gather("variable","value", 4:7) %>% mutate(par= str_sub(variable,1,1)) %>% filter(ITN == "LLIN")
+ggplot2::ggplot(plot_Data_EHT, ggplot2::aes(x=variable, y=value)) + 
+	ggplot2::geom_boxplot(alpha=0.4) +
+	ggplot2::stat_summary(fun.y=mean, geom="point", shape=20, size=5, color="red", fill="red")
+
+library(summarytools)
+summarytools::view(summarytools::dfSummary(Data_EHT[,c(1:3,11:14)] %>% filter(ITN == "LLIN")))
 
 S = 0.9 # 0.7 to 0.95
 g = 3 # 2,3,4,5
