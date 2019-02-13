@@ -126,7 +126,8 @@ pic(myLHS, nboot=40)
 # the Symmetric Blest Measure of Agreement (SBMA) between the PRCC coefficients
 # of two runs with different sample sizes.
 newLHS <- LHS(modelRun, factors, 750, q, q.arg)
-(mySbma <- sbma(myLHS, newLHS))
+(mySbma <- sbma(myLHS, newLHS)) 
+# 0.8986226 # It is reasonable to expect agreements around 0.7 to 0.9 in well-behaved models, but two cases require attention.
 
 
 
@@ -151,13 +152,23 @@ hist(subset(Data_EHT, ITN=="no")$fi1)
 hist(subset(Data_EHT, ITN=="LLIN")$fi1)
 
 
-plot_Data_EHT <- Data_EHT[,c(1:3,11:14)] %>% gather("variable","value", 4:7) %>% mutate(par= str_sub(variable,1,1)) %>% filter(ITN == "LLIN")
-ggplot2::ggplot(plot_Data_EHT, ggplot2::aes(x=variable, y=value)) + 
+plot_EHT_LLIN <- Data_EHT[,c(1:3,11:14)] %>% gather("variable","value", 4:7) %>% filter(ITN == "LLIN")
+ggplot2::ggplot(plot_EHT_LLIN, ggplot2::aes(x=variable, y=value)) + 
+	ggplot2::geom_boxplot(alpha=0.4) +
+	ggplot2::stat_summary(fun.y=mean, geom="point", shape=20, size=5, color="red", fill="red")
+
+plot_EHT_ctrl <- Data_EHT[,c(1:3,11:13)] %>% gather("variable","value", 4:6) %>% filter(ITN == "no", variable != "fi1")
+ggplot2::ggplot(plot_EHT_ctrl, ggplot2::aes(x=variable, y=value)) + 
+	ggplot2::geom_boxplot(alpha=0.4) +
+	ggplot2::stat_summary(fun.y=mean, geom="point", shape=20, size=5, color="red", fill="red")
+
+plot_EHT_ctrl <- Data_EHT[,c(1:3,11:13)] %>% gather("variable","value", 4:6) %>% filter(ITN == "no", variable == "fi1")
+ggplot2::ggplot(plot_EHT_ctrl, ggplot2::aes(x=variable, y=value)) + 
 	ggplot2::geom_boxplot(alpha=0.4) +
 	ggplot2::stat_summary(fun.y=mean, geom="point", shape=20, size=5, color="red", fill="red")
 
 library(summarytools)
-summarytools::view(summarytools::dfSummary(Data_EHT[,c(1:3,11:14)] %>% filter(ITN == "LLIN")))
+summarytools::view(summarytools::dfSummary(Data_EHT[,c(1:3,11:14)] %>% filter(ITN == "no")))
 
 S = 0.9 # 0.7 to 0.95
 g = 3 # 2,3,4,5

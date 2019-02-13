@@ -22,13 +22,13 @@ for (i in 1:length(RTP.fit$x)){
 
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=y*100, y=-redVC*100)) + 
-  xlab("LLIN Coverage (%)") + ylab("fold-reduction in vectorial capacity") +
+  xlab("LLIN Coverage (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
   scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
   theme(axis.title.y = element_blank())#+
-  #theme(axis.title.x = element_text(size = rel(1.2), angle = 00))
+	#theme(axis.title.x = element_blank())
 
 return(fig)
 }
@@ -47,13 +47,13 @@ for (i in 1:length(RTP.fit$x)){
 
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
-  xlab("Survival in dwelling (%)") + ylab("fold-reduction in vectorial capacity") +
+  xlab("Survival in dwelling (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
-  scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
+  #scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
   theme(axis.title.y = element_blank())#+
-  #theme(axis.title.x = element_text(size = rel(1.2), angle = 00))
+  #theme(axis.title.x = element_blank())
 return(fig)
 }
 
@@ -70,13 +70,13 @@ for (i in 1:length(RTP.fit$x)){
 }
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
-  xlab("Diversion probability (% of pre-bite survivors)") + ylab("fold-reduction in vectorial capacity") +
+  xlab("Diversion probability (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
-  scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
+  #scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
   theme(axis.title.y = element_blank())#+
-  #theme(axis.title.x = element_text(size = rel(1.2), angle = 00))
+	#theme(axis.title.x = element_blank())
 return(fig)
 }
 
@@ -95,13 +95,13 @@ for (i in 1:length(RTP.fit$x)){
 
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
-  xlab("Exposure to bites when/where LLINs are in use (%)") + ylab("fold-reduction in vectorial capacity") +
+  xlab("LLIN avoidance (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
-  scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
+  #scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
   theme(axis.title.y = element_blank())#+
-  #theme(axis.title.x = element_text(size = rel(1.2), angle = 00))
+#theme(axis.title.x = element_blank())
 return(fig)
 }
 
@@ -125,9 +125,28 @@ ggarrange(fig_cov_1 + rremove("legend"),
           fig_f_2+ rremove("legend"),
           fig_pii_1+ rremove("legend"),
           fig_pii_2+ rremove("legend"),
+					common.legend = TRUE,
           labels = c("A", "B", "C", "D", "E", "F", "G", "H"),
           ncol = 2, nrow = 4)
 
+ggarrange(fig_cov_1, 
+					fig_cov_2, 
+					fig_m_1, 
+					fig_m_2, 
+					fig_f_1,
+					fig_f_2,
+					fig_pii_1,
+					fig_pii_2,
+					common.legend = TRUE,
+					labels = c("A", "B", "C", "D", "E", "F", "G", "H"),
+					ncol = 2, nrow = 4)
+
+library(gridExtra)
+grid.arrange(fig_cov_1+ rremove("legend"), fig_cov_2, nrow=1)
+
+ggarrange(fig_cov_1 + rremove("legend"), 
+					fig_cov_2 + rremove("legend") , nrow=1,ncol = 2)
+					
 # export all graphs in one ppt
 graph2ppt(fig_cov_1, file = "Rplot", append = FALSE)
 graph2ppt(fig_cov_2, file = "Rplot", append = TRUE)
@@ -137,3 +156,5 @@ graph2ppt(fig_f_1, file = "Rplot", append = TRUE)
 graph2ppt(fig_f_2, file = "Rplot", append = TRUE)
 graph2ppt(fig_pii_1, file = "Rplot", append = TRUE)
 graph2ppt(fig_pii_2, file = "Rplot", append = TRUE)
+
+
