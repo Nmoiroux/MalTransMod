@@ -1,7 +1,7 @@
 
 # predict-kdr with sex differential selection (on mating success for males and on number of oviposition events in female) # 
 # selection on male before mating and on female after mating
-predict_kdr <- function(q=0.1, W_F=c(1,1,1), W_M=c(1,1,1), N.gen=60){
+predict_kdr <- function(q=0.1, W_F=c(1,1,1), W_M=c(1,1,1), N.gen=100){
   
   # initial population (hardy-weinberg equilibrium)
   p<- 1 - q
@@ -72,19 +72,20 @@ predict_kdr <- function(q=0.1, W_F=c(1,1,1), W_M=c(1,1,1), N.gen=60){
 predict_kdr(W_F=c(1,0.8,0.66), W_M=c(0.67,1,0.55), N.gen=100)
 
 # predict-kdr with sex differential selection (on mating success for males and on number of oviposition events in female) # tractable version
-# selection on male and female before mating
+# selection on male and female occurs before mating
 #' Title
 #'
 #' @param q 
 #' @param W_F 
 #' @param W_M 
 #' @param N.gen 
+#' @param sex.ratio
 #'
 #' @return
 #' @export
 #'
 #' @examples
-predict_kdr4 <- function(q=0.1, W_F=c(1,1,1), W_M=c(0.67,1,0.55), N.gen=100){
+predict_kdr4 <- function(q=0.1, W_F=c(1,1,1), W_M=c(0.67,1,0.55), N.gen=100, sex.ratio = 0.5){
   
   # initialise first population (hardy-weinberg equilibrium)
   p <- 1 - q
@@ -131,9 +132,9 @@ predict_kdr4 <- function(q=0.1, W_F=c(1,1,1), W_M=c(0.67,1,0.55), N.gen=100){
     
     # next generation genotype probabilities (taking into account sex ratio)
     
-    mRRf <- mRRm <- 0.5 * mateRR
-    mSSf <- mSSm <- 0.5 * mateSS
-    mRSf <- mRSm <- 0.5 * mateRS
+    mRRf <- mRRm <- sex.ratio * mateRR
+    mSSf <- mSSm <- sex.ratio * mateSS
+    mRSf <- mRSm <- sex.ratio * mateRS
     
     # next generation normalised genotype frequencies per sex
     
