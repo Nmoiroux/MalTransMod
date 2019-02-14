@@ -4,13 +4,13 @@
 #' @param Pref_kdr a vector of size three of which elements are the preference for protected LLIN users of the three genotypes (in the following order : RR, RS, SS)
 #' @param m1p_kdr a vector of size three of which elements are the pre-bite mortality of the three genotypes (in the following order : RR, RS, SS) when entering a hut with a LLIN protected individual
 #' @param m2p_kdr a vector of size three of which elements are the pre-bite mortality of the three genotypes (in the following order : RR, RS, SS) when entering a hut with an unprotected individual
-#' @param success_not a vector oz size three of which elements are the success rate at penetrating through an holed untreated net (=1 if no net)
-#' @param success_net a vector oz size three of which elements are the success rate at penetrating through an holed LLIN
-#' @param biting_not a vector oz size three of which elements are the blood feeding success rate of pre-bite survivors in a hut with no (or untreated) net
-#' @param biting_net a vector oz size three of which elements are the blood feeding success rate of pre-bite survivors in a hut with an LLIN
+#' @param success_not a vector of size three of which elements are the success rate at penetrating through an holed untreated net (=1 if no net)
+#' @param success_net a vector of size three of which elements are the success rate at penetrating through an holed LLIN
+#' @param biting_not a vector of size three of which elements are the blood feeding success rate of pre-bite survivors in a hut with no (or untreated) net
+#' @param biting_net a vector of size three of which elements are the blood feeding success rate of pre-bite survivors in a hut with an LLIN
 #' @param FUN the function used to calculate the number of oviposition events (default = `VLAIB``)
 #'
-#' @return a vector of the average number of oviposition events for the three genotypes (in the following order: RR RS SS)
+#' @return a vector of the relative fitnesses (calculated from the number of oviposition events) of the three genotypes (in the following order: RR RS SS)
 #' @export
 #'
 #' @examples
@@ -34,7 +34,7 @@ fitness_f_kdr <- function(Pllin_kdr, m1p_kdr, m2p_kdr, success_not, success_net,
   OvA_SS <- FUN( 100, m1p = m1p_kdr[3], m2p = m2p_kdr[3], Pllin = Pllin_kdr[3], RR_fi1 = RR_fi1_kdr[3], fi1_u = fi1_u_kdr[3] )["OvA"]
   
   OvA_kdr <- c(OvA_RR, OvA_RS, OvA_SS)    # number of oviposition that each genotype is expected to do
-  W_F <- OvA_kdr / max(OvA_kdr)
+  W_F <- OvA_kdr / max(OvA_kdr)						# relative fitness
   return(W_F)
 }
 
