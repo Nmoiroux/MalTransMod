@@ -27,7 +27,7 @@ fitness_f_kdr <- function(Pllin_kdr, m1p_kdr, m2p_kdr, success_not, success_net,
   
   fi1_p_kdr   <-  success_net*biting_net      # Successful feeding probability of alive mosquitoes in treatment (genotype RR, RS and SS respectively)
   fi1_u_kdr   <-  success_not*biting_not      # Successful feeding probability of alive mosquitoes in control (genotype RR, RS and SS respectively)
-  RR_fi1_kdr  <- fi1_p_kdr / fi1_u_kdr        # risk ratio of successful feeding for alive mosquitoes in a hut with LLIN (compared to hut without LLIN)
+  RR_fi1_kdr  <-  fi1_p_kdr / fi1_u_kdr       # risk ratio of successful feeding for alive mosquitoes in a hut with LLIN (compared to hut without LLIN)
   
   OvA_RR <- FUN( 100, m1p = m1p_kdr[1], m2p = m2p_kdr[1], Pllin = Pllin_kdr[1], RR_fi1 = RR_fi1_kdr[1], fi1_u = fi1_u_kdr[1] )["OvA"]
   OvA_RS <- FUN( 100, m1p = m1p_kdr[2], m2p = m2p_kdr[2], Pllin = Pllin_kdr[2], RR_fi1 = RR_fi1_kdr[2], fi1_u = fi1_u_kdr[2] )["OvA"]
