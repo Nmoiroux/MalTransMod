@@ -49,7 +49,7 @@ RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
   xlab("Survival in dwelling (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
-  #scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
+  scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
   theme(axis.title.y = element_blank())#+
@@ -70,9 +70,9 @@ for (i in 1:length(RTP.fit$x)){
 }
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
-  xlab("Diversion probability (%)") + #ylab("fold-reduction in vectorial capacity") +
+  xlab("LLIN-induced avoidance (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
-  #scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
+  scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
   theme(axis.title.y = element_blank())#+
@@ -129,6 +129,31 @@ ggarrange(fig_cov_1 + rremove("legend"),
           labels = c("A", "B", "C", "D", "E", "F", "G", "H"),
           ncol = 2, nrow = 4)
 
+ggarrange(fig_cov_1 + rremove("legend"), 
+					fig_cov_2 + rremove("legend"), 
+					common.legend = TRUE,
+					labels = c("A", "B"),
+					ncol = 2, nrow = 1)
+
+fig_cov_1$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
+fig_cov_1$data %>% filter(redVC %in% maxVC$max)
+
+fig_cov_2$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
+fig_cov_2$data %>% filter(redVC %in% maxVC$max)
+
+
+ggarrange(fig_m_1 + rremove("legend"), 
+					fig_m_2 + rremove("legend"), 
+					common.legend = TRUE,
+					labels = c("A", "B"),
+					ncol = 2, nrow = 1)
+
+fig_m_1$data %>% group_by(x) %>% summarise(max=min(redVC)) -> maxVC
+fig_m_1$data %>% filter(redVC %in% maxVC$max)
+
+fig_m_2$data %>% group_by(x) %>% summarise(max=min(redVC)) -> maxVC
+fig_m_2$data %>% filter(redVC %in% maxVC$max)
+
 ggarrange(fig_cov_1, 
 					fig_cov_2, 
 					fig_m_1, 
@@ -162,39 +187,47 @@ graph2ppt(fig_pii_2, file = "Rplot", append = TRUE)
 
 ####### study impact on Kdr frequency (with various)----
 
-
-Pllin_kdr <- c(0.3,0.3,0.3)       # preference for LLIN protected of genotype RR, RS and RS respectively
+#### (better) parameters (from litterature) for fitness calculus in females per genotypes----
 m1p_kdr   <- c(0.05,0.5,0.95)     # pre-bite mortality when faced to an LLIN of genotype RR, RS and SS respectively (Diop et al 2015, permethrin)
 m2p_kdr   <- c(0.005,0.005,0.005) # post-bite mortality when faced to an LLIN of genotype RR, RS and SS respectively 
 
 success_not <- c(1, 1, 1)		      # taux de succès de passage à travers la moustiquaire non traitée (= 1 si pas de moustiquaire) (RR, RS and SS)
 success_net <- c(0.5, 0.75, 0.5)	# taux de succès de passage à travers la moustiquaire traitée (RR, RS and SS) (Diop et al 2015,  permethrin)
 biting_not  <- c(0.55,0.55,0.55)	# taux de succès du repas de sang (sans traitement) (RR, RS and SS) (Diop et al, unpublished,  permethrin)
-biting_net  <- c(0.5,0.5,0.5)		  # taux de succès du repas de sang (suite à un contact avec insecticide) (RR, RS and SS: 0.8,0.4,0.2) (Diop et al, unpublished,  permethrin)
+biting_net  <- c(0.8,0.4,0.2)		  # taux de succès du repas de sang (suite à un contact avec insecticide) (RR, RS and SS: 0.8,0.4,0.2) (Diop et al, unpublished,  permethrin)
 
-N.gen <- 100
+fi1_p_kdr   <-  success_net*biting_net      # Successful feeding probability of alive mosquitoes in treatment (genotype RR, RS and SS respectively)
+fi1_u_kdr   <-  success_not*biting_not      # Successful feeding probability of alive mosquitoes in control (genotype RR, RS and SS respectively)
+RR_fi1_kdr  <-  fi1_p_kdr / fi1_u_kdr       # risk ratio of successful feeding for alive mosquitoes in a hut with LLIN (compared to hut without LLIN)
 
-success_net <-success_not 
-biting_net  <-biting_not
-	
-df_pref <- as.data.frame(matrix(rep(c(0.7,0.5,0.3),3), 3,3))
-df_pref[4,] <- c(0.6,0.5,0.5)
-df_kdr <- merge(data.frame(1:N.gen), df_pref, by=NULL)
+#### parameter for a most simple demonstration (only based on pre-bite mortality)
+m1p_kdr     <- c(0.05,0.5,0.95)     # pre-bite mortality when faced to an LLIN of genotype RR, RS and SS respectively (Diop et al 2015, permethrin)
+m2p_kdr     <- c(0.005,0.005,0.005) # post-bite mortality when faced to an LLIN of genotype RR, RS and SS respectively 
+fi1_u_kdr   <- c(0.55, 0.55, 0.55)  # Successful feeding probability of alive mosquitoes in a hut without LLIN (genotype RR, RS and SS respectively)
+RR_fi1_kdr  <- c(0.56, 0.56, 0.56)  # risk ratio of successful feeding for alive mosquitoes in a hut with LLIN (compared to hut without LLIN)
+N.gen <- 100 												# nb of generations to simulate
 
+# create a dataframe with different combinations of preference (Pllin) per genotypes
+df_pref <- as.data.frame(matrix(rep(c(0.7,0.5,0.3),3), 3,3))  # same pref. value for all genotypes, various level of preference (attraction, neutral, repulsion)
+df_pref[4,] <- c(0.6,0.5,0.5)																  # only RR genotype attracted (as in Poriciani et. al 2017)
+# data frame that will receive the results
+df_kdr <- merge(data.frame(1:N.gen), df_pref, by=NULL)				# 
+
+# loop that calculate 
 v_kdr <- NULL
 for (i in (1:nrow(df_pref))){
-	W_F <- fitness_f_kdr(as.numeric(df_pref[i,]),m1p_kdr,m2p_kdr, success_not, success_net, biting_not, biting_net) # relative fitness of females
+	W_F <- fitness_f_kdr(as.numeric(df_pref[i,]),m1p_kdr,m2p_kdr, fi1_u_kdr, RR_fi1_kdr) # relative fitness of females
 	v_kdr <- c(v_kdr, predict_kdr4(W_F=W_F,W_M=c(1,1,1), N.gen=N.gen)) # vector of R allele frequency
 	
 }
 df_kdr$fkdr <- v_kdr
 df_kdr$scn <- as.factor(paste(df_kdr$V1, df_kdr$V2, df_kdr$V3))
-levels(df_kdr$scn) <- c("RR: 0.3, RS: 0.3, SS: 0.3", "RR: 0.5, RS: 0.5, SS: 0.5", "RR: 0.6, RS: 0.5, SS: 0.5", "RR: 0.7, RS: 0.7, SS: 0.7")
+levels(df_kdr$scn) <- c("deterrent for all genotypes", "inert for all genotypes", "attractive for RR and inert for others", "attractive for all genotypes")
 
 fig <- ggplot(df_kdr, aes(x=X1.N.gen-1, y=fkdr)) + 
-	xlab("N generations") + ylab("Kdr allelic frequency") +
+	xlab("Generation") + ylab("Kdr allelic frequency") +
 	geom_line(aes(linetype=df_kdr$scn)) +
-	scale_linetype_discrete(name="vector kdr genotype preference \n for LLINs (vs. untreated nets)")+
+	scale_linetype_discrete(name="LLIN remote effect")+
 	xlim(0,25) + #ylim(min(RTP.fit$redVC),-1)+
 	theme(aspect.ratio=1) 
 #theme(axis.title.y = element_blank())#+
