@@ -3,12 +3,12 @@
 #' @param nsim unused but required argument, for compatibility / comparison with other function (ex: VLAIB_IBM)
 #' @param S baseline survival rate
 #' @param g duration of gonotrophic cycle (positive integer, default = 3)
-#' @param m1u pre-bite mortality probability when faced to un unprotected host (default = 0.016)
-#' @param m1p pre-bite mortality probability when faced to un LLIN protected host (default = 0.5)
+#' @param Du Diversion probability when entering a hut without LLIN (default = 0.43)
+#' @param Dp Diversion probability when entering a hut with LLIN (default = 0.3)
+#' @param m1u pre-bite feeding related mortality probability when faced to un unprotected host (default = 0.03)
+#' @param m1p pre-bite feeding related mortality probability when faced to un LLIN protected host (default = 0.72)
 #' @param m2u post-bite mortality probability when feeding on an unprotected host (default = 0.005)
 #' @param m2p post-bite mortality probability when feeding on an LLIN protected host (default = 0.21)
-#' @param fi1_u successful feeding probability of pre-bite survivors (default = 0.55)
-#' @param RR_fi1 risk ratio of successful feeding for alive mosquitoes in a hut with LLIN (compared to hut without LLIN) (default = 0.56)
 #' @param Nh Number of humans in the community (default = 1000)
 #' @param Uh proportion of humans that use LLINs (default = 0.6)
 #' @param pi proportion of exposure to bite that occurs during which LLIN is in use (default = 0.9)
@@ -25,8 +25,8 @@
 #' VLAIB()
 #' VLAIB(Ih = 0.1)
 #' VLAIB()["VLAIB"]
-VLAIB <- function(nsim=1000, S = 0.9, g = 3, m1u = 0.016, m1p = 0.5, m2u = 0.005, m2p = 0.21, fi1_u = 0.55, 
-                  RR_fi1 = 0.56, Nh = 1000, Uh = 0.6, pi = 0.9, Pllin = 0.5, k = 0.1, n = 11, Ih = 0.5){
+VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.43, Dp= 0.3,m1u = 0.03, m1p = 0.72, m2u = 0.005, m2p = 0.21, 
+									Nh = 1000, Uh = 0.6, pi = 0.9, Pllin = 0.5, k = 0.1, n = 11, Ih = 0.5){
   
   ## proba of encountering an unprotected or LLIN protected human
   Np <- Uh*pi*Nh                        # average number of people protected by an LLIN - Expression (1)
@@ -39,22 +39,31 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, m1u = 0.016, m1p = 0.5, m2u = 0.005
   
   
   ## survival and diversion probabilities
-  S1u <- 1 - m1u            # pre-bite survival in hut with unprotected people - Expression (10)
-  S1p <- 1 - m1p            # pre-bite survival in hut with LLIN protected people  - Expression (16)
+  #S1u <- 1 - m1u            # pre-bite survival in hut with unprotected people - Expression (10)
+  #S1p <- 1 - m1p            # pre-bite survival in hut with LLIN protected people  - Expression (16)
 
+  #S2u <- 1 - m2u            # post-bite survival in hut with unprotected people - Expression (14)
+  #S2p <- 1 - m2p            # post-bite survival in hut with LLIN protected people - Expression (20)
+ 
+  #fi_u  <- S1u * fi1_u      # Successful feeding probability when entering a hut with an unprotected human - Expression (12)
+  #fi1_p <- fi1_u * RR_fi1   # successful feeding probability of pre-bite survivors on LLIN protected host - Expression (22)
+  #fi_p  <- S1p * fi1_p      # Successful feeding probability when entering a hut with an LLIN protected human- Expression (18)
+  
+  #D1u <- 1-fi1_u            # Diversion probability of pre-bite survivors on unprotected host - Expression (11)
+  #D1p <- 1-fi1_u*RR_fi1     # Diversion probability of pre-bite survivors on LLIN protected host - Expression (17)
+  
+  #Du  <- S1u * D1u          # probability of diversion (HS next day) when entering a hut with an unprotected human  - Expression (13)
+  #Dp  <- S1p * D1p          # probability of postpone (HS next day) when entering a hut with a protected human  - Expression (19)
+
+  ## in cases we study the effect of Dp as a behavioural resistance mechanism (that reduce mortality)
+  ## Du, Dp, m1u, m1p, known (with diffrent definition for m1u and m1p)
+	fi1_u <- 1 - m1u 
+  fi1_p <- 1 - m1p
+  fi_u  <- (1-Du) * fi1_u
+  fi_p  <- (1-Dp) * fi1_p
   S2u <- 1 - m2u            # post-bite survival in hut with unprotected people - Expression (14)
   S2p <- 1 - m2p            # post-bite survival in hut with LLIN protected people - Expression (20)
- 
-  fi_u  <- S1u * fi1_u      # Successful feeding probability when entering a hut with an unprotected human - Expression (12)
-  fi1_p <- fi1_u * RR_fi1   # successful feeding probability of pre-bite survivors on LLIN protected host - Expression (22)
-  fi_p  <- S1p * fi1_p      # Successful feeding probability when entering a hut with an LLIN protected human- Expression (18)
   
-  D1u <- 1-fi1_u            # Diversion probability of pre-bite survivors on unprotected host - Expression (11)
-  D1p <- 1-fi1_u*RR_fi1     # Diversion probability of pre-bite survivors on LLIN protected host - Expression (17)
-  
-  Du  <- S1u * D1u          # probability of diversion (HS next day) when entering a hut with an unprotected human  - Expression (13)
-  Dp  <- S1p * D1p          # probability of postpone (HS next day) when entering a hut with a protected human  - Expression (19)
-
   
   ### Transition probability from HS (host-seeking) to F (fed) state and from F to HS
   Pd <- Du*Eu + Dp*Ep 			              # Proba that an HS vector will be diverted (to HS next night if it survive) - Expression (24)
@@ -114,12 +123,12 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, m1u = 0.016, m1p = 0.5, m2u = 0.005
 #' between to scenarii. It can use various model that are given as `FUN` argument
 #'
 #' @param nsim number of simulation (used when FUN is model that used simulation)
-#' @param m m1p: pre-bite mortality probability when faced to un LLIN protected host (default = 0.5)
+#' @param m m1p: pre-bite feeding related mortality probability when faced to un LLIN protected host (default = 0.72)
 #' @param m2 m1p at baseline
 #' @param p Pllin: preference for LLIN protected humans (against unprotected humans) as recorded in a dual choice olfactometer (default = 0.5, i.e inert LLIN)
 #' @param p2 Pllin at baseline 
-#' @param f RR_fi1u: risk ratio of successful feeding for alive mosquitoes in a hut with LLIN (compared to hut without LLIN) (default = 0.56)
-#' @param f2 baseline RR_fi1u
+#' @param D Diversion probability when entering a hut with LLIN (default = 0.3)
+#' @param D2 D2 at baseline
 #' @param Uh LLIN use rate in the population (default = 0.6)
 #' @param Uh2 Uh at baseline (default = 0.6)
 #' @param pi pi: proportion of exposure to bite that occurs during which LLIN is in use (default = 0.9)
@@ -133,9 +142,9 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, m1u = 0.016, m1p = 0.5, m2u = 0.005
 #' @examples
 #' fRTP(Uh=0.8, Uh2=0.5)
 #' 
-fRTP <- function(nsim = 1000,m = 0.5, m2= 0.5, p = 0.5, p2 = 0.5, f = 0.56, f2= 0.56, Uh = 0.6, Uh2 = 0.6, pi = 0.9, pi2 = 0.9, FUN = VLAIB, fu = 0.55){
-  RTP <- FUN(nsim, m1p = m , Pllin = p , RR_fi1 = f , fi1_u = fu, Uh = Uh , pi = pi)["VLAIB"] / 
-         FUN(nsim, m1p = m2, Pllin = p2, RR_fi1 = f2, fi1_u = fu, Uh = Uh2, pi = pi2)["VLAIB"]
+fRTP <- function(nsim = 1000,m = 0.72, m2= 0.72, p = 0.5, p2 = 0.5, D = 0.3, D2= 0.3, Uh = 0.6, Uh2 = 0.6, pi = 0.9, pi2 = 0.9, FUN = VLAIB, fu = 0.55){
+  RTP <- FUN(nsim, m1p = m , Pllin = p , Dp = D , fi1_u = fu, Uh = Uh , pi = pi)["VLAIB"] / 
+         FUN(nsim, m1p = m2, Pllin = p2, Dp = D2, fi1_u = fu, Uh = Uh2, pi = pi2)["VLAIB"]
   names(RTP) <- "RTP"
   return(RTP)
 }
