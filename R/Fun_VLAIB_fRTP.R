@@ -38,49 +38,31 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.43, Dp= 0.3,m1u = 0.03, m1p 
   Ep <- Cpp + Cpu * Pllin			          # proba to enter a house with a protected human - Expression (8)
   
   
-  ## survival and diversion probabilities
-  #S1u <- 1 - m1u            # pre-bite survival in hut with unprotected people - Expression (10)
-  #S1p <- 1 - m1p            # pre-bite survival in hut with LLIN protected people  - Expression (16)
-
-  #S2u <- 1 - m2u            # post-bite survival in hut with unprotected people - Expression (14)
-  #S2p <- 1 - m2p            # post-bite survival in hut with LLIN protected people - Expression (20)
- 
-  #fi_u  <- S1u * fi1_u      # Successful feeding probability when entering a hut with an unprotected human - Expression (12)
-  #fi1_p <- fi1_u * RR_fi1   # successful feeding probability of pre-bite survivors on LLIN protected host - Expression (22)
-  #fi_p  <- S1p * fi1_p      # Successful feeding probability when entering a hut with an LLIN protected human- Expression (18)
-  
-  #D1u <- 1-fi1_u            # Diversion probability of pre-bite survivors on unprotected host - Expression (11)
-  #D1p <- 1-fi1_u*RR_fi1     # Diversion probability of pre-bite survivors on LLIN protected host - Expression (17)
-  
-  #Du  <- S1u * D1u          # probability of diversion (HS next day) when entering a hut with an unprotected human  - Expression (13)
-  #Dp  <- S1p * D1p          # probability of postpone (HS next day) when entering a hut with a protected human  - Expression (19)
-
-  ## in cases we study the effect of Dp as a behavioural resistance mechanism (that reduce mortality)
-  ## Du, Dp, m1u, m1p, known (with diffrent definition for m1u and m1p)
-	fi1_u <- 1 - m1u 
-  fi1_p <- 1 - m1p
-  fi_u  <- (1-Du) * fi1_u
-  fi_p  <- (1-Dp) * fi1_p
-  S2u <- 1 - m2u            # post-bite survival in hut with unprotected people - Expression (14)
-  S2p <- 1 - m2p            # post-bite survival in hut with LLIN protected people - Expression (20)
+  ## diversion, feeding and mortality probabilities
+	fi1_u <- 1 - m1u 		      # Successful feeding probability when ettempting to feed (non diverted mosquitoes) in a hut without LLIN - Expression (9)
+  fi1_p <- 1 - m1p          # Successful feeding probability when ettempting to feed (non diverted mosquitoes) in a hut with LLIN- Expression (12)
+  fi_u  <- (1-Du) * fi1_u   # Successful feeding probability when entering a hut with an unprotected human - Expression (10)
+  fi_p  <- (1-Dp) * fi1_p   # Successful feeding probability when entering a hut with an LLIN protected human- Expression (13)
+  S2u <- 1 - m2u            # post-bite survival in hut with unprotected people - Expression (11)
+  S2p <- 1 - m2p            # post-bite survival in hut with LLIN protected people - Expression (14)
   
   
   ### Transition probability from HS (host-seeking) to F (fed) state and from F to HS
-  Pd <- Du*Eu + Dp*Ep 			              # Proba that an HS vector will be diverted (to HS next night if it survive) - Expression (24)
-  Sd <- S 	  									          # Proba that diverted vector survives to state HS next night - Expression (25)
-  Pf_u <- Eu * fi_u								        # Proba that an HS vector will bite succesfully (same night) on an unprotected human - Expression (26)
-  Pf_p <- Ep * fi_p			                  # Proba that an HS vector will bite succesfully (same night) on a LLIN protected human - Expression (27)
-  Pf <- Pf_u + Pf_p										    # Proba that an HS vector will bite succesfully (same night) on human - Expression (28)
-  F_u <- Pf_u / (Pf_u + Pf_p)							# Proportion fed on unprotected humans - Expression (29)
-  Sf <- (S2u * F_u + (1-F_u)*S2p) * S^g		# Proba survives from successful bite to HS at next G cycle - Expression (30)
+  Pd <- Du*Eu + Dp*Ep 			              # Proba that an HS vector will be diverted (to HS next night if it survive) - Expression (15)
+  Sd <- S 	  									          # Proba that diverted vector survives to state HS next night - Expression (16)
+  Pf_u <- Eu * fi_u								        # Proba that an HS vector will bite succesfully (same night) on an unprotected human - Expression (17)
+  Pf_p <- Ep * fi_p			                  # Proba that an HS vector will bite succesfully (same night) on a LLIN protected human - Expression (18)
+  Pf <- Pf_u + Pf_p										    # Proba that an HS vector will bite succesfully (same night) on human - Expression (19)
+  F_u <- Pf_u / (Pf_u + Pf_p)							# Proportion fed on unprotected humans - Expression (20)
+  Sf <- (S2u * F_u + (1-F_u)*S2p) * S^g		# Proba survives from successful bite to HS at next G cycle - Expression (21)
   
   
   ### model average lifetime infectious bites
   
-  PfA <- Pf/(1-Pd*Sd)									  # Average proba that a HS vector will survive to take a feed - Expression (31)
-  BA <- PfA/(1-Sf*PfA)							  	# Average number of bites which a HS vector will survive to give - Expression (32)
-  c <- k * Ih          		              # probability that a vector become infected while taking a bloodmeal -  Expression (33)
-  Pl <- PfA*c/(1-PfA*Sf*(1-c))					# Probability that a vector will acquire Pf during its lifetime - Expression (34)
+  PfA <- Pf/(1-Pd*Sd)									  # Average proba that a HS vector will survive to take a feed - Expression (22)
+  BA <- PfA/(1-Sf*PfA)							  	# Average number of bites which a HS vector will survive to give - Expression (23)
+  c <- k * Ih          		              # probability that a vector become infected while taking a bloodmeal -  Expression (24)
+  Pl <- PfA*c/(1-PfA*Sf*(1-c))					# Probability that a vector will acquire Pf during its lifetime - Expression (25)
   
   # Expression (35)
 
@@ -105,12 +87,12 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.43, Dp= 0.3,m1u = 0.03, m1p 
   }
   
   Term4 <- Term1*Term3	       # Term3 gives the number of possible orders for each combinaison of (i) diversions and ((n-g-i)/g) feeds
-  Sl <- Sf * sum(Term4)				 # Proba that a newly infected vector will survive to HS state as an infectious vector - Expression (35)
+  Sl <- Sf * sum(Term4)				 # Proba that a newly infected vector will survive to HS state as an infectious vector - Expression (26)
   
-  VLAIB = Pl*Sl*BA						 # Vector average lifetime infectious bites (= individual Vector capacity) - Expression (36)
+  VLAIB = Pl*Sl*BA						 # Vector average lifetime infectious bites (= individual Vector capacity) - Expression (27)
   
-  ### number of oviposition events - can be used as a fitness indicators in a genetic/evolution model
-  OvA <- (1/(1-(PfA*Sf)))-1           # Average number of oviposition which a HS vector will survive to give (geometric series of first term 1 and reason Sf*Pfa, decreased by 1)
+  ### number of oviposition events - can be used as a fitness indicators in a genetic/evolution model - Expression (30)
+  OvA <- (1/(1-(PfA*Sf)))-1    # Average number of oviposition which a HS vector will survive to give (geometric series of first term 1 and reason Sf*Pfa, decreased by 1)
   
   results <- c(Eu, Ep, Pd, Sd, Pf_u, Pf_p, Pf, F_u, Sf, Sl, PfA, BA, OvA, Pl, VLAIB)
   names(results) <- c("Eu", "Ep", "Pd", "Sd", "Pf_u", "Pf_p", "Pf", "F_u", "Sf", "Sl", "PfA", "BA","OvA", "Pl", "VLAIB")
@@ -143,8 +125,8 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.43, Dp= 0.3,m1u = 0.03, m1p 
 #' fRTP(Uh=0.8, Uh2=0.5)
 #' 
 fRTP <- function(nsim = 1000,m = 0.72, m2= 0.72, p = 0.5, p2 = 0.5, D = 0.3, D2= 0.3, Uh = 0.6, Uh2 = 0.6, pi = 0.9, pi2 = 0.9, FUN = VLAIB, fu = 0.55){
-  RTP <- FUN(nsim, m1p = m , Pllin = p , Dp = D , fi1_u = fu, Uh = Uh , pi = pi)["VLAIB"] / 
-         FUN(nsim, m1p = m2, Pllin = p2, Dp = D2, fi1_u = fu, Uh = Uh2, pi = pi2)["VLAIB"]
+  RTP <- FUN(nsim, m1p = m , Pllin = p , Dp = D , Uh = Uh , pi = pi)["VLAIB"] / 
+         FUN(nsim, m1p = m2, Pllin = p2, Dp = D2, Uh = Uh2, pi = pi2)["VLAIB"]
   names(RTP) <- "RTP"
   return(RTP)
 }
