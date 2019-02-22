@@ -5,8 +5,8 @@ library(export)
 # -----
 p<- c(0.6,0.7,0.8)		      # preference for LLIN protected human (against unprotected human) 
 Cov <- seq(0,1,by = 0.01)	  # coverage LLIN
-m <- seq(0,1,by = 0.01)     # pre-bite mortality
-f <- seq(0,1,by = 0.01)     # blood-succes rate ratio in pre-bite survivors (vs untreated)
+m <- seq(0,1,by = 0.01)     # pre-bite feeding-related mortality
+d <- seq(0,1,by = 0.01)     # diversion probability
 Behav <- seq(0,1,by = 0.01) # proportion of exposure to bite during which ITN is in use
 ref_pref <- 0.5							#
 FUN <- VLAIB
@@ -66,11 +66,11 @@ fig_f <- function(ref_pref,a,b){
 RTP.fit <- expand.grid(x=a,y=b)
 for (i in 1:length(RTP.fit$x)){
   #RTP.fit$z1[i] <- fRTP(p=RTP.fit$x[i],f=RTP.fit$y[i],f2=RTP.fit$y[i],fu=0.55, p2=ref_pref, FUN=VC_bincoef)
-  RTP.fit$z2[i] <- fRTP(p=RTP.fit$x[i],f=RTP.fit$y[i],f2=RTP.fit$y[i],fu=0.55, p2=ref_pref, FUN=FUN)
+  RTP.fit$z2[i] <- fRTP(p=RTP.fit$x[i],D=RTP.fit$y[i],D2=RTP.fit$y[i],fu=0.55, p2=ref_pref, FUN=FUN)
 }
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
-  xlab("LLIN-induced avoidance (%)") + #ylab("fold-reduction in vectorial capacity") +
+  xlab("Avoidance probability (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
   scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
   xlim(0,100) + ylim(-100,0)+
@@ -80,8 +80,8 @@ fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) +
 return(fig)
 }
 
-fig_f_1 <- fig_f(0.5,p,f)
-fig_f_2 <- fig_f(0.3,p,f)
+fig_f_1 <- fig_f(0.5,p,d)
+fig_f_2 <- fig_f(0.3,p,d)
 
 ### Graph RTP vs pref(x) and Pii(y)
 
@@ -148,10 +148,10 @@ ggarrange(fig_m_1 + rremove("legend"),
 					labels = c("A", "B"),
 					ncol = 2, nrow = 1)
 
-fig_m_1$data %>% group_by(x) %>% summarise(max=min(redVC)) -> maxVC
+fig_m_1$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
 fig_m_1$data %>% filter(redVC %in% maxVC$max)
 
-fig_m_2$data %>% group_by(x) %>% summarise(max=min(redVC)) -> maxVC
+fig_m_2$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
 fig_m_2$data %>% filter(redVC %in% maxVC$max)
 
 ggarrange(fig_cov_1, 
