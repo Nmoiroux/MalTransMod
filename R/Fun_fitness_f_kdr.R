@@ -17,9 +17,9 @@
 
 fitness_f_kdr <- function(Pllin_kdr, m1p_kdr, m2p_kdr, FUN=VLAIB){
  
-  OvA_RR <- FUN( 100, m1p = m1p_kdr[1], m2p = m2p_kdr[1], Pllin = Pllin_kdr[1], RR_fi1 = RR_fi1_kdr[1], fi1_u = fi1_u_kdr[1] )["OvA"]
-  OvA_RS <- FUN( 100, m1p = m1p_kdr[2], m2p = m2p_kdr[2], Pllin = Pllin_kdr[2], RR_fi1 = RR_fi1_kdr[2], fi1_u = fi1_u_kdr[2] )["OvA"]
-  OvA_SS <- FUN( 100, m1p = m1p_kdr[3], m2p = m2p_kdr[3], Pllin = Pllin_kdr[3], RR_fi1 = RR_fi1_kdr[3], fi1_u = fi1_u_kdr[3] )["OvA"]
+  OvA_RR <- FUN( 100, m1p = m1p_kdr[1], m2p = m2p_kdr[1], Pllin = Pllin_kdr[1])["OvA"]
+  OvA_RS <- FUN( 100, m1p = m1p_kdr[2], m2p = m2p_kdr[2], Pllin = Pllin_kdr[2])["OvA"]
+  OvA_SS <- FUN( 100, m1p = m1p_kdr[3], m2p = m2p_kdr[3], Pllin = Pllin_kdr[3])["OvA"]
   
   OvA_kdr <- c(OvA_RR, OvA_RS, OvA_SS)    # number of oviposition that each genotype is expected to do
   W_F <- OvA_kdr / max(OvA_kdr)						# relative fitness
