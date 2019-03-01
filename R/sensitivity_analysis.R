@@ -8,7 +8,7 @@ fRTP_sens <- function(nsim,S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11,
                                                                                   #m1p, 
                                                                                   m2u = 0.005,
                                                                                   m2p = 0.21,
-																																									fi1_u = 0.55,
+																																									Du = 0.43,
                                                                                   #RR_fi1,
                                                                                   #Uh,
                                                                                   #pi, 
@@ -19,7 +19,7 @@ fRTP_sens <- function(nsim,S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11,
 																																			            #m1p=m1p, 
 																																			            m2u=m2u,
 																																			            m2p=m2p,
-																																			  					fi1_u=fi1_u,
+																																			  					Du=Du,
 																																			            #RR_fi1=RR_fi1,
 																																			            #Uh=Uh,
 																																			            #pi=pi, 
@@ -30,7 +30,7 @@ fRTP_sens <- function(nsim,S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11,
 													        		#m1p=m1p, 
 													        		m2u=m2u,
 													        		m2p=m2p,
-													        		fi1_u=fi1_u,
+													        		Du=Du,
 													        		#RR_fi1=RR_fi1,
 													        		#Uh=Uh,
 													        		#pi=pi, 
@@ -46,7 +46,7 @@ factors <- c("S", "g", "Nh", "Ih", "k", "n",
              #"m1p",    # 0.1 - 1 (EHT Moiroux)          # TESTED
              "m2u",     # 0 - 0.01 (EHT Moiroux)
              "m2p",     # 0 - 0.5 (EHT Moiroux)
-             "fi1_u"    # 0.2 - 0.8 (EHT Moiroux)
+             "Du"       # 0.15 - 0.8 (EHT Moiroux)
              #"RR_fi1", # 0.25 - 0.9 (EHT Moiroux)       # TESTED
              #"Uh",     # 0 - 1                          # TESTED
              #"pi",     # 0 - 1                          # TESTED
@@ -68,7 +68,7 @@ q <- c("qunif",  #S
        #"qunif", #m1p # TESTED (fixed)
        "qunif",  #m2u
        "qunif",  #m2p
-       "qunif"#, #fi1_u
+       "qunif"#, #Du
        #"qunif", #RR_fi1 # TESTED (fixed)
        #"qunif", #Uh # TESTED (fixed)
        #"qunif", #pi # TESTED (fixed)
@@ -87,7 +87,7 @@ q.arg <- list(list(min=0.7, max=0.95), #S
               #list(min=0.1, max=0.9), #m1p # TESTED (fixed)
               list(min=0, max=0.02),   #m2u
               list(min=0.08, max=0.5), #m2p
-              list(min=0.2, max=0.8)#, #fi1_u
+              list(min=0.15, max=0.8)#, #Du
               #list(min=0.25, max=0.9),#RR_fi1 # TESTED (fixed)
               #list(min=0.01, max=1),  #Uh # TESTED (fixed)
               #list(min=0.1, max=1),   #pi # TESTED (fixed)
