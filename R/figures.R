@@ -22,13 +22,13 @@ for (i in 1:length(RTP.fit$x)){
 
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=y*100, y=-redVC*100)) + 
-  xlab("LLIN Coverage (%)") + #ylab("fold-reduction in vectorial capacity") +
+  xlab("LLIN Coverage (%)") + #ylab("% reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
-  scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
+  scale_linetype_discrete(name="LLIN attraction")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
-  theme(axis.title.y = element_blank())#+
-	#theme(axis.title.x = element_blank())
+  theme(axis.title.y = element_blank())+
+	theme(axis.title.x = element_blank())
 
 return(fig)
 }
@@ -47,13 +47,13 @@ for (i in 1:length(RTP.fit$x)){
 
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
-  xlab("Survival in dwelling (%)") + #ylab("fold-reduction in vectorial capacity") +
+  xlab("feeding attempt survival (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
-  scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
+  scale_linetype_discrete(name="LLIN attraction")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
-  theme(axis.title.y = element_blank())#+
-  #theme(axis.title.x = element_blank())
+  theme(axis.title.y = element_blank())+
+  theme(axis.title.x = element_blank())
 return(fig)
 }
 
@@ -70,13 +70,13 @@ for (i in 1:length(RTP.fit$x)){
 }
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
-  xlab("Avoidance probability (%)") + #ylab("fold-reduction in vectorial capacity") +
+  xlab("Escaping (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
-  scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
+  scale_linetype_discrete(name="LLIN attraction")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
-  theme(axis.title.y = element_blank())#+
-	#theme(axis.title.x = element_blank())
+  theme(axis.title.y = element_blank())+
+	theme(axis.title.x = element_blank())
 return(fig)
 }
 
@@ -95,13 +95,13 @@ for (i in 1:length(RTP.fit$x)){
 
 RTP.fit$redVC <- 1-RTP.fit$z2
 fig <- ggplot(RTP.fit, aes(x=(1-y)*100, y=-redVC*100)) + 
-  xlab("LLIN avoidance (%)") + #ylab("fold-reduction in vectorial capacity") +
+  xlab("Spatial-temporal avoidance (%)") + #ylab("fold-reduction in vectorial capacity") +
   geom_line(aes(linetype=as.factor(x))) +
-  #scale_linetype_discrete(name="vector preference \n for LLINs (vs. untreated nets)")+
+  scale_linetype_discrete(name="LLIN attraction")+
   xlim(0,100) + ylim(-100,0)+
   theme(aspect.ratio=1) +
-  theme(axis.title.y = element_blank())#+
-#theme(axis.title.x = element_blank())
+  theme(axis.title.y = element_blank())+
+  theme(axis.title.x = element_blank())
 return(fig)
 }
 
@@ -129,11 +129,17 @@ ggarrange(fig_cov_1 + rremove("legend"),
           labels = c("A", "B", "C", "D", "E", "F", "G", "H"),
           ncol = 2, nrow = 4)
 
-ggarrange(fig_cov_1 + rremove("legend"), 
+figure1 <- ggarrange(fig_cov_1 + rremove("legend"), 
 					fig_cov_2 + rremove("legend"), 
 					common.legend = TRUE,
 					labels = c("A", "B"),
 					ncol = 2, nrow = 1)
+
+annotate_figure(figure1,
+								bottom = text_grob("LLIN coverage (%)"),
+								left = text_grob("% reduction in vectorial capacity", rot=90)#,
+								#fig.lab = "Figure 1", fig.lab.face = "bold"
+)
 
 fig_cov_1$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
 fig_cov_1$data %>% filter(redVC %in% maxVC$max)
@@ -142,17 +148,60 @@ fig_cov_2$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
 fig_cov_2$data %>% filter(redVC %in% maxVC$max)
 
 
-ggarrange(fig_m_1 + rremove("legend"), 
-					fig_m_2 + rremove("legend"), 
-					common.legend = TRUE,
-					labels = c("A", "B"),
-					ncol = 2, nrow = 1)
+figure2 <- ggarrange(fig_m_1 + rremove("legend"), 
+										 fig_m_2 + rremove("legend"), 
+										 common.legend = TRUE,
+										 labels = c("A", "B"),
+										 ncol = 2, nrow = 1)
+
+annotate_figure(figure2,
+								bottom = text_grob("Survival per feeding attempt (%)"),
+								left = text_grob("% reduction in vectorial capacity", rot=90)#,
+								#fig.lab = "Figure 1", fig.lab.face = "bold"
+)
 
 fig_m_1$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
 fig_m_1$data %>% filter(redVC %in% maxVC$max)
 
 fig_m_2$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
 fig_m_2$data %>% filter(redVC %in% maxVC$max)
+
+
+figure3 <- ggarrange(fig_f_1 + rremove("legend"), 
+										 fig_f_2 + rremove("legend"), 
+										 common.legend = TRUE,
+										 labels = c("A", "B"),
+										 ncol = 2, nrow = 1)
+
+annotate_figure(figure3,
+								bottom = text_grob("Escaping (%)"),
+								left = text_grob("% reduction in vectorial capacity", rot=90)#,
+								#fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+
+fig_f_1$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
+fig_f_1$data %>% filter(redVC %in% maxVC$max)
+
+fig_f_2$data %>% group_by(x) %>% summarise(max=max(redVC)) -> maxVC
+fig_f_2$data %>% filter(redVC %in% maxVC$max)
+
+
+figure4 <- ggarrange(fig_pii_1 + rremove("legend"), 
+										 fig_pii_2 + rremove("legend"), 
+										 common.legend = TRUE,
+										 labels = c("A", "B"),
+										 ncol = 2, nrow = 1)
+
+annotate_figure(figure4,
+								bottom = text_grob("Spatial-temporal avoidance (%)"),
+								left = text_grob("% reduction in vectorial capacity", rot=90)#,
+								#fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+
+fig_f_1$data %>% filter(y == 0.5)
+
+fig_f_2$data %>% filter(y == 0.5)
+
 
 ggarrange(fig_cov_1, 
 					fig_cov_2, 
@@ -216,7 +265,7 @@ df_kdr <- merge(data.frame(1:N.gen), df_pref, by=NULL)				#
 # loop that calculate 
 v_kdr <- NULL
 for (i in (1:nrow(df_pref))){
-	W_F <- fitness_f_kdr(as.numeric(df_pref[i,]),m1p_kdr,m2p_kdr, fi1_u_kdr, RR_fi1_kdr) # relative fitness of females
+	W_F <- fitness_f_kdr(as.numeric(df_pref[i,]),m1p_kdr,m2p_kdr) # relative fitness of females
 	v_kdr <- c(v_kdr, predict_kdr4(W_F=W_F,W_M=c(1,1,1), N.gen=N.gen)) # vector of R allele frequency
 	
 }
@@ -224,17 +273,19 @@ df_kdr$fkdr <- v_kdr
 df_kdr$scn <- as.factor(paste(df_kdr$V1, df_kdr$V2, df_kdr$V3))
 levels(df_kdr$scn) <- c("deterrent for all genotypes", "inert for all genotypes", "attractive for RR and inert for others", "attractive for all genotypes")
 
+
 fig <- ggplot(df_kdr, aes(x=X1.N.gen-1, y=fkdr)) + 
 	xlab("Generation") + ylab("Kdr allelic frequency") +
-	geom_line(aes(linetype=df_kdr$scn)) +
+	geom_line(aes(linetype=fct_rev(df_kdr$scn))) +
 	scale_linetype_discrete(name="LLIN remote effect")+
 	xlim(0,25) + #ylim(min(RTP.fit$redVC),-1)+
 	theme(aspect.ratio=1) 
 #theme(axis.title.y = element_blank())#+
 #theme(axis.title.x = element_text(size = rel(1.2), angle = 00))
+fig
 
-
-
+fig$data[1:15,] 
+fig$data %>% filter(X1.N.gen %in% c(1:15))
 
 
 
