@@ -25,7 +25,7 @@
 #' VLAIB()
 #' VLAIB(Ih = 0.1)
 #' VLAIB()["VLAIB"]
-VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.43, Dp= 0.3,m1u = 0.03, m1p = 0.72, m2u = 0.005, m2p = 0.21, 
+VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.43, Dp= 0.3,m1u = 0.05, m1p = 0.72, m2u = 0.005, m2p = 0.21, 
 									Nh = 1000, Uh = 0.6, pi = 0.9, Pllin = 0.5, k = 0.1, n = 11, Ih = 0.5){
   
   ## proba of encountering an unprotected or LLIN protected human
