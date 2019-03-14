@@ -3,12 +3,12 @@
 #' @param nsim unused but required argument, for compatibility / comparison with other function (ex: VLAIB_IBM)
 #' @param S baseline survival rate
 #' @param g duration of gonotrophic cycle (positive integer, default = 3)
-#' @param Du Diversion probability when entering a hut without LLIN (default = 0.43)
-#' @param Dp Diversion probability when entering a hut with LLIN (default = 0.3)
-#' @param m1u pre-bite feeding related mortality probability when faced to un unprotected host (default = 0.03)
-#' @param m1p pre-bite feeding related mortality probability when faced to un LLIN protected host (default = 0.72)
+#' @param Du Diversion probability when entering a hut without LLIN (default = 0.44)
+#' @param Dp Diversion probability when entering a hut with LLIN (default = 0.31)
+#' @param m1u pre-bite feeding related mortality probability when faced to un unprotected host (default = 0.05)
+#' @param m1p pre-bite feeding related mortality probability when faced to un LLIN protected host (default = 0.6)
 #' @param m2u post-bite mortality probability when feeding on an unprotected host (default = 0.005)
-#' @param m2p post-bite mortality probability when feeding on an LLIN protected host (default = 0.21)
+#' @param m2p post-bite mortality probability when feeding on an LLIN protected host (default = 0.28)
 #' @param Nh Number of humans in the community (default = 1000)
 #' @param Uh proportion of humans that use LLINs (default = 0.6)
 #' @param pi proportion of exposure to bite that occurs during which LLIN is in use (default = 0.9)
@@ -25,7 +25,7 @@
 #' VLAIB()
 #' VLAIB(Ih = 0.1)
 #' VLAIB()["VLAIB"]
-VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.43, Dp= 0.3,m1u = 0.05, m1p = 0.72, m2u = 0.005, m2p = 0.21, 
+VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.44, Dp= 0.31,m1u = 0.05, m1p = 0.6, m2u = 0.005, m2p = 0.28, 
 									Nh = 1000, Uh = 0.6, pi = 0.9, Pllin = 0.5, k = 0.1, n = 11, Ih = 0.5){
   
   ## proba of encountering an unprotected or LLIN protected human
