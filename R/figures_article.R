@@ -287,3 +287,33 @@ fig4_B$data %>% filter(pi. == 0.5)
 
 ## search number of generations needed to reach allelic frequency of 0.8
 figure5$data %>% group_by(scn) %>% summarise(val = which.min(abs(fkdr-0.8)))
+
+
+#### Figure X plot preference value recorded by EHT in nature from two meat-analysis studies ----
+# calculate prefernce value from field data
+# from EHT in Moiroux et al. 2017, Plos One
+Data_moiroux <- read.delim("data/Data_moiroux.txt")
+Data_moiroux %>% 
+	dplyr::filter(ITN == "no") %>% 
+	select(Eval, total) %>% 
+	right_join(Data_moiroux,by="Eval") %>% 
+	#dplyr::filter(ITN == "ITN") %>%
+	dplyr::filter(ITN != "no") %>%
+	select(ttmt,total.x,total.y) %>%
+	mutate(pLLIN = total.y/(total.y+total.x)) %>%
+	mutate(study = "moiroux") %>%
+	rename(Net = ttmt, TotalUTN = total.x, TotalITN = total.y) -> Data_pref_moiroux
+
+# from EHT in Strode et al. 2014, Plos Med
+Data_strode <- read.delim("data/Data_strode.txt")
+Data_strode %>% 
+	#filter(Intervention=="LLIN") %>%
+	select(Net, TotalITN, TotalUTN) %>%
+	mutate(study = "strode") %>%
+	mutate(pLLIN = TotalITN / (TotalITN+TotalUTN)) -> Data_pref_strode
+
+# bind the two dataframe together											 
+Data_pref <- rbind(Data_pref_moiroux, Data_pref_strode)
+
+# plot
+qplot( x=study , y=pLLIN , data=Data_pref , geom=c("boxplot","jitter") ,  ylab="Preference for treated net (pLLIN)")
