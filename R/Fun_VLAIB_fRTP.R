@@ -29,7 +29,7 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.43, Dp= 0.3,m1u = 0.05, m1p 
 									Nh = 1000, Uh = 0.6, pi = 0.9, Pllin = 0.5, k = 0.1, n = 11, Ih = 0.5){
   
   ## proba of encountering an unprotected or LLIN protected human
-  Np <- Uh*pi*Nh                        # average number of people protected by an LLIN - Expression (1)
+  Np <- Uh*pi*Nh                       # average number of people protected by an LLIN - Expression (1)
   Nu <- Nh - Np                        # average number of unprotected people - Expression (2)
   Cpp <- dhyper(2, round(Np), round(Nu), 2, log = FALSE) # probability that a host-seeking Anopheles will be faced to a choice between two LLIN protected hosts - Expression (4)
   Cpu <- dhyper(1, round(Np), round(Nu), 2, log = FALSE) # ... choice between a LLIN protected host and an unprotected host - Expression (5)
