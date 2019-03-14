@@ -1,24 +1,50 @@
-### sensitivity analysis
+### uncertainty and sensitivity analysis
 library(pse)
 library(tidyverse)
-library(summarytools)
+source("R/Fun_VLAIB_fRTP.R")
 
-### define range (min and max) values for each parameters
-S_rg   <- c(0.7, 0.95)
-g_rg   <- c(2, 6)
-Nh_rg  <- c(300, 5000)
-Ih_rg  <- c(0.1, 0.8)
-k_rg   <- c(0.02, 0.2)
-n_rg   <- c(8, 16)
-m1u_rg <- c(,)
-m2u_rg <- c(,)
-Du_rg  <- c(,)
-Dp_rg  <- c(,)
-Uh_rg  <- c(0.2, 0.8)
-pi_rg  <- c(0, 1)
+#### define range (min and max) values for each parameters ----
+### from litterature
+S_rg   <- list(min=0.61, max=0.98) # Silver 2008, Chapter 13
+g_rg   <- list(min=2, max=6)				# Afrane et al. 2005, JME; Carnevale & Robert 2009
+k_rg   <- list(min=0.02, max=0.2)  # Churcher et al. 2015, Nat. Comm
+n_rg   <- list(min=8, max=16)			# Hien 2016, Plos Path; Ohm et al. 2018, Par.& Vec.
+Uh_rg  <- list(min=0.2, max=0.8)		# Malaria Atlas Project 
+Ih_rg  <- list(min=0.1, max=0.9)   # Malaria Atlas Project 
+pi_rg  <- list(min=0.45, max=1)    # Cooke et al. 2015, Malaria Journal
 
+### user defined
+Nh_rg  <- list(min=300, max=5000)
+   
+### from Moiroux et al. 2017
+## load summarised data of Experimental hut trials (EHT) from Moiroux et al. 2017
+Data_moiroux <- read.delim("data/Data_moiroux.txt")	
 
-### modify fRTP function to be fed with all parameters of VLAIB function
+Data_moiroux %>%
+	dplyr::mutate(m1 = Tot_D_unfd / Total_unfd) %>% 	       # calculate pre-bite mortality
+	dplyr::mutate(m2 = Tot_D_fed / Total_bfed) %>%  	       # calculate post-bite mortality
+	dplyr::mutate(D = Tot_L_unfd / total) %>%   	           # calculate Diversion rate
+	group_by(ITN) %>% 																			 # group by type of tretament (ITN, CTN or control)
+	summarise_at(c("m1","m2","D"),funs(min,max), na.rm=TRUE) -> stat_moiroux # calculate min and max values of m1, m2 and D
+
+## find min and max values of pre-bite, post-bite mortality and diversion for untreated nets and LLINs
+stat_UTN <- stat_moiroux %>% filter(ITN=="no") %>% select(-ITN) %>% as.data.frame()
+stat_ITN <- stat_moiroux %>% filter(ITN=="ITN")%>% select(-ITN) %>% as.data.frame()
+
+m1u_rg <- list(min=stat_UTN[1,1], max=stat_UTN[1,4])
+m2u_rg <- list(min=stat_UTN[1,2], max=stat_UTN[1,5])
+m1p_rg <- list(min=stat_ITN[1,1], max=stat_ITN[1,4])
+m2p_rg <- list(min=stat_ITN[1,2], max=stat_ITN[1,5])
+Du_rg  <- list(min=stat_UTN[1,3], max=stat_UTN[1,6])
+Dp_rg  <- list(min=stat_ITN[1,3], max=stat_ITN[1,6])
+
+## set preference values for the comparison of transmission
+pref <- 0.6					# in the sensitivity analysis, we will compare an attractive LLIN to
+pref_ref <- 0.3     # a deterrent one
+
+#### prepare functions and data for uncertainity analysis----
+
+### modify fRTP function to be fed with all parameters of VLAIB function ----
 fRTP_sens <- function(nsim, S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11, m1u = 0.05,
                                                                                   m1p = 0.72, 
                                                                                   m2u = 0.005,
@@ -38,7 +64,7 @@ fRTP_sens <- function(nsim, S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11
 																																			            Dp=Dp,
 																																			            Uh=Uh,
 																																			            pi=pi, 
-																																			            Pllin=0.7)["VLAIB"] / +
+																																			            Pllin=pref)["VLAIB"] / +
 													         FUN(nsim,S = S, g = g, Nh = Nh, Ih = Ih, k = k, n = n, 
 																																			        		m1u=m1u,
 																																			        		m1p=m1p, 
@@ -48,11 +74,11 @@ fRTP_sens <- function(nsim, S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11
 																																			        		Dp=Dp,
 																																			        		Uh=Uh,
 																																			        		pi=pi, 
-																																			        		Pllin=0.5)["VLAIB"]
+																																			        		Pllin=pref_ref)["VLAIB"]
   return(-(1-RTP)*100)
 }
 
-##### following tutorial of pse package
+### following tutorial of pse package ----
 ## names of the parameters
 factors <- c("S", "g", "Nh", "Ih", "k", "n", 
              "m1u" ,    # 0 - 0.04 (EHT Moiroux)
@@ -89,26 +115,26 @@ q <- c("qunif",  #S
        )
 
 
-## a list containing the lists with all the parameters to the density functions
-q.arg <- list(list(min=0.7, max=0.95), #S
-              list(min=2, max=6),      #g
-              list(min=300, max=5000), #Nh
-              list(min=0.1, max=0.8),  #Ih
-              list(min=0.02, max=0.2), #k
-              list(min=8, max=16),     #n
-              list(min=0, max=0.16),   #m1u
-              list(min=0.1, max=0.9),  #m1p # TESTED (fixed)
-              list(min=0, max=0.02),   #m2u
-              list(min=0.08, max=0.5), #m2p
-              list(min=0.15, max=0.8), #Du
-              list(min=0.01, max=1),   #Dp # TESTED (fixed)
-              list(min=0.01, max=1),   #Uh # TESTED (fixed)
-              list(min=0.1, max=1)#,   #pi # TESTED (fixed)
+## a list containing the lists with all the parameters to the density functions ----
+q.arg <- list(S_rg, #S
+              g_rg, #g
+              Nh_rg, #Nh
+              Ih_rg,  #Ih
+              k_rg, #k
+              n_rg,     #n
+              m1u_rg,   #m1u
+              m1p_rg,  #m1p # TESTED (fixed)
+              m2u_rg,   #m2u
+              m2p_rg, #m2p
+							Du_rg, #Du
+							Dp_rg,   #Dp # TESTED (fixed)
+							Uh_rg,   #Uh # TESTED (fixed)
+							pi_rg#,   #pi # TESTED (fixed)
               #list(min=0.2, max=0.4)  #Pllin
               )
 
 
-# function modelRun encapsulates fRTP_sens function,in a manner to receive a data.frame containing 
+# function modelRun encapsulates fRTP_sens function,in a manner to receive a data.frame containing ----
 # all parameter combinations and returning the results in one array.
 modelRun <- function (my.data) {
   return(mapply(fRTP_sens, 100, my.data[,1], my.data[,2], my.data[,3], my.data[,4], my.data[,5], my.data[,6],
@@ -117,22 +143,22 @@ modelRun <- function (my.data) {
                 ))
 }
 
-# Generates the Latin Hypercube sampling for uncertainty and sensitivity analyses.
+# Generates the Latin Hypercube sampling for uncertainty and sensitivity analyses.----
 myLHS <- pse::LHS(modelRun, factors, 500, q, q.arg, nboot=50)
 
 # accessing the data and result data frames from an LHS object
 pse::get.data(myLHS)
 
-# plots the empirical cumulative density function
+# plots the empirical cumulative density function----
 pse::plotecdf(myLHS)
 
-# produces a series of scatterplots from data
+# produces a series of scatterplots from data----
 pse::plotscatter(myLHS)
 
-# plots the partial rank correlation coefficient from an LHS object
+# plots the partial rank correlation coefficient from an LHS object----
 pse::plotprcc(myLHS)
 
-# Estimates the partial inclination coefficient of a model response in relation with all model input variables
+# Estimates the partial inclination coefficient of a model response in relation with all model input variables----
 pse::pic(myLHS, nboot=40)
 
 # In order to decide whether our sample size was adequate or insufficient, we calculate
@@ -144,7 +170,7 @@ newLHS <- pse::LHS(modelRun, factors, 750, q, q.arg)
 
 
 
-
+# End ----
 ### define possible range of parameters from field data
 Data_EHT <- read.delim("data/Data_EHT.txt")
 Data_meta <- read.delim("data/DB_meta_AnGambiae.txt")
@@ -169,8 +195,18 @@ summarytools::view(summarytools::dfSummary(Data_EHT[,c(1:3,11:13)] %>% dplyr::fi
 summarytools::view(summarytools::dfSummary(Data_EHT[,c(1:3,11:13)] %>% dplyr::filter(ITN == "LLIN")))
 
 Data_EHT %>% dplyr::filter(ITN == "LLIN") -> data_ITN
-fit <- fitdist(data_ITN$Tot_D_unfd,"binom", start=list(size=data_ITN$Total_unfd, prob=data_ITN$m1)
+fit <- fitdist(data_ITN$Tot_D_unfd,"binom", start=list(size=data_ITN$Total_unfd, prob=data_ITN$m1))
 fit <- fitdist(data_ITN$Tot_D_unfd,"binom", fix.arg=list(size=data_ITN$Total_unfd), start=list(prob=data_ITN$m1))
+
+###### mise au propre
+Data_EHT <- read.delim("data/Data_EHT.txt")
+Data_EHT$Total_unfd <- Data_EHT$Tot_L_unfd + Data_EHT$Tot_D_unfd
+Data_EHT %>% dplyr::filter(ITN == "no") %>% summarise_at(c("m1","m2","D"),funs(min,max))
+Data_EHT %>% dplyr::filter(ITN == "LLIN") %>% summarise_at(c("m1","m2","D"),funs(min,max))
+
+
+
+
 
 
 
@@ -210,20 +246,3 @@ ggplot2::ggplot(plot_EHT_ctrl, ggplot2::aes(x=variable, y=value)) +
 
 summarytools::view(summarytools::dfSummary(Data_EHT[,c(1:3,11:13)] %>% filter(ITN == "no")))
 
-S = 0.9 # 0.7 to 0.95
-g = 3 # 2,3,4,5
-Pop = 1000 # 300 - 5000 (uniform)
-prev = 0.5 # 0.1 - 0.8 (uniform)
-k = 0.1 # 0.02 - 0.2 Churcher (but related to prevalence in human)
-n = 11 # 8 - 15
-HBI = 1 # 1
-
-m_pre_h_u = 0.015 # 0 - 0.04 (EHT Moiroux)
-m_pre_h_p = 0.5 # 0.1 - 1 (EHT Moiroux)           # TESTED
-m_post_h_u = 0.005 # 0 - 0.01 (EHT Moiroux)
-m_post_h_p = 0.21 # 0 - 0.5 (EHT Moiroux)
-f_h_u_live = 0.55 # 0.2 - 0.8 (EHT Moiroux)
-f_h_p_live = 0.31 # 0.1 - 0.7 (EHT Moiroux)       # TESTED
-Ch = 0.6 # 0 - 1                                  # TESTED
-pii = 0.9 # 0 - 1                                 # TESTED
-pref_h_u = 0.5 # 0.3 - 0.9                        # TESTED
