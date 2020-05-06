@@ -1,6 +1,7 @@
 ### uncertainty and sensitivity analysis
 library(pse)
 library(tidyverse)
+library(ggpubr)
 library(ggbeeswarm)
 source("R/Fun_VLAIB_fRTP.R")
 
@@ -26,7 +27,7 @@ Data_moiroux %>%
 	dplyr::mutate(m2 = Tot_D_fed / Total_bfed) %>%  	       # calculate post-bite mortality
 	dplyr::mutate(D = Tot_L_unfd / total) %>%   	           # calculate Diversion rate
 	group_by(ITN) %>% 																			 # group by type of tretament (ITN, CTN or control)
-	summarise_at(c("m1","m2","D"),funs(min,max), na.rm=TRUE) -> range_moiroux # calculate min and max values of m1, m2 and D
+	summarise_at(c("m1","m2","D"),funs(q1= quantile(.,probs=0.05), q2 =quantile(.,probs=0.95)), na.rm=TRUE) -> range_moiroux # calculate min and max values of m1, m2 and D
 
 ## find min and max values of pre-bite, post-bite mortality and diversion for untreated nets and LLINs
 range_UTN <- range_moiroux %>% filter(ITN=="no") %>% select(-ITN) %>% as.data.frame()
@@ -41,11 +42,11 @@ Dp_rg  <- list(min=range_ITN[1,3], max=range_ITN[1,6])
 
 ## set preference values for the comparison of transmission
 pref <- 0.6					# in the sensitivity analysis, we will compare an attractive LLIN to
-pref_ref <- 0.3     # a deterrent one
+pref_ref <- 0.36     # a deterrent one
 
 #### prepare functions and data for uncertainity analysis----
 
-### modify fRTP function to be fed with all parameters of the VLAIB function ----
+### modify fRTP function to be fed with all parameters of the IC function ----
 fRTP_sens <- function(nsim, S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11, m1u = 0.05,
                                                                                   m1p = 0.72, 
                                                                                   m2u = 0.005,
@@ -55,7 +56,7 @@ fRTP_sens <- function(nsim, S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11
                                                                                   Uh = 0.6,
                                                                                   pi = 0.9, 
                                                                                   #Pllin = 0.5,  
-                                                                                  FUN = VLAIB){
+                                                                                  FUN = IC){
 													  RTP <- FUN(nsim,S = S, g = g, Nh = Nh, Ih = Ih, k = k, n = n, 
 																																			            m1u=m1u,
 																																			            m1p=m1p, 
@@ -65,7 +66,7 @@ fRTP_sens <- function(nsim, S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11
 																																			            Dp=Dp,
 																																			            Uh=Uh,
 																																			            pi=pi, 
-																																			            Pllin=pref)["VLAIB"] / +
+																																			            Pllin=pref)["IC"] / +
 													         FUN(nsim,S = S, g = g, Nh = Nh, Ih = Ih, k = k, n = n, 
 																																			        		m1u=m1u,
 																																			        		m1p=m1p, 
@@ -75,7 +76,7 @@ fRTP_sens <- function(nsim, S = 0.9, g = 3, Nh = 1000, Ih = 0.5, k = 0.1, n = 11
 																																			        		Dp=Dp,
 																																			        		Uh=Uh,
 																																			        		pi=pi, 
-																																			        		Pllin=pref_ref)["VLAIB"]
+																																			        		Pllin=pref_ref)["IC"]
   return(-(1-RTP)*100)
 }
 
@@ -153,9 +154,9 @@ pse::get.data(myLHS)
 # plots the empirical cumulative density function----
 pse::plotecdf(myLHS)
 
-pse::get.results(myLHS) %>%
-	sort() %>%
-	as.data.frame() -> res_LHS
+res_LHS <- pse::get.results(myLHS) %>%
+											sort() %>%
+											as.data.frame()
 
 
 
@@ -191,7 +192,7 @@ quantile(res_LHS[,1], probs = c(0.05, 0.95))
 
 
 # produces a series of scatterplots from data----
-pse::plotscatter(myLHS)
+pse::plotscatter(myLHS, index.data = c(1:7,9:11))
 
 # plots the partial rank correlation coefficient from an LHS object----
 pse::plotprcc(myLHS)
@@ -210,4 +211,4 @@ newLHS <- pse::LHS(modelRun, factors, 750, q, q.arg)
 
 # End ----
 
-
+myLHS$res[2]

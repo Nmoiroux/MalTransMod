@@ -7,12 +7,15 @@ insertSource("R/my_ggarrange.R", package = "ggpubr") # modified version of ggarr
 
 # -----
 
-FUN <- VLAIB # function used to calculate vectorial capacity
+FUN <- IC # function used to calculate vectorial capacity
 
 #### figure 1 (coverage) ----
+# common value for Fig1 to 4
+legend_title <- "Vector preference for LLINs"
+y_title <- "% reduction in vectorial capacity"
 # common parameters
 cov <- seq(0,1,by = 0.01)	  # coverage LLIN
-FUN <- VLAIB                # function used to calculate vectorial capacity
+FUN <- IC                # function used to calculate vectorial capacity
 # panel A
 p<- c(0.6,0.7)		      # preference for LLIN protected human (against unprotected human) 
 ref_pref <- 0.5							# preference value of the reference LLIN (inert = 0.5)
@@ -25,7 +28,7 @@ RTP.fit$redVC <- -(1-RTP.fit$z)*100        # reduction in VC
 fig1_A <- ggplot(RTP.fit, aes(x=cov.*100, y=redVC)) + 
 	xlab("LLIN Coverage (%)") + 
 	geom_line(aes(linetype=as.factor(p.))) +
-	scale_linetype_manual(values=c(2,3),name="LLIN attraction")+
+	scale_linetype_manual(values=c(2,3),name=legend_title)+
 	xlim(0,100) + ylim(-100,0)+
 	theme(aspect.ratio=1) +
 	theme(axis.title.y = element_blank())+
@@ -33,7 +36,7 @@ fig1_A <- ggplot(RTP.fit, aes(x=cov.*100, y=redVC)) +
 
 # panel B
 p<- c(0.5,0.6,0.7)		      # preference for LLIN protected human (against unprotected human) 
-ref_pref <- 0.3							# preference value of the reference LLIN (inert = 0.5)
+ref_pref <- 0.36							# preference value of the reference LLIN (attractive = 0.3)
 
 RTP.fit <- expand.grid(p.=p,cov.=cov)   # create table of all combinations of p and cov
 RTP.fit <- mutate(RTP.fit, z = pmap_dbl(list(cov.,p.),~fRTP(p=.y, Uh=.x, Uh2=.x, p2=ref_pref,FUN= FUN))) # calculate VC ratio
@@ -42,7 +45,7 @@ RTP.fit$redVC <- -(1-RTP.fit$z)*100        # reduction in VC
 fig1_B <- ggplot(RTP.fit, aes(x=cov.*100, y=redVC)) + 
 	xlab("LLIN Coverage (%)") + 
 	geom_line(aes(linetype=as.factor(p.))) +
-	scale_linetype_manual(values=c(1,2,3),name="LLIN attraction")+
+	scale_linetype_manual(values=c(1,2,3),name=legend_title)+
 	xlim(0,100) + ylim(-100,0)+
 	theme(aspect.ratio=1) +
 	theme(axis.title.y = element_blank())+
@@ -57,11 +60,9 @@ figure1 <- ggarrange(fig1_A + rremove("legend"),
 										 labels = c("A", "B"),
 										 ncol = 2, nrow = 1)
 
-annotate_figure(figure1,
+figure1 <- annotate_figure(figure1,
 								bottom = text_grob("LLIN coverage (%)"),
-								left = text_grob("% reduction in vectorial capacity", rot=90)#,
-								#fig.lab = "Figure 1", fig.lab.face = "bold"
-								)
+								left = text_grob(y_title, rot=90))
 
 #### figure 2 (physiological resistance) ----
 # common parameters
@@ -77,9 +78,9 @@ RTP.fit <- mutate(RTP.fit, z = pmap_dbl(list(m.,p.),~fRTP(p=.y, m=.x, m2=.x, p2=
 RTP.fit$redVC <- -(1-RTP.fit$z)*100        # reduction in VC
 
 fig2_A <- ggplot(RTP.fit, aes(x=(1-m.)*100, y=redVC)) + 
-	xlab("feeding attempt survival (%)") + 
+	xlab("Feeding attempt survival (%)") + 
 	geom_line(aes(linetype=as.factor(p.))) +
-	scale_linetype_manual(values=c(2,3),name="LLIN attraction")+
+	scale_linetype_manual(values=c(2,3),name=legend_title)+
 	xlim(0,100) + ylim(-100,0)+
 	theme(aspect.ratio=1) +
 	theme(axis.title.y = element_blank())+
@@ -87,7 +88,7 @@ fig2_A <- ggplot(RTP.fit, aes(x=(1-m.)*100, y=redVC)) +
 
 # panel B
 p<- c(0.5,0.6,0.7)		      # preference for LLIN protected human (against unprotected human) 
-ref_pref <- 0.3							# preference value of the reference LLIN (inert = 0.5)
+ref_pref <- 0.36							# preference value of the reference LLIN (inert = 0.5)
 
 RTP.fit <- expand.grid(p.=p,m.=m)   # create table of all combinations of p and m
 RTP.fit <- mutate(RTP.fit, z = pmap_dbl(list(m.,p.),~fRTP(p=.y, m=.x, m2=.x, p2=ref_pref,FUN= FUN))) # calculate VC ratio
@@ -96,7 +97,7 @@ RTP.fit$redVC <- -(1-RTP.fit$z)*100        # reduction in VC
 fig2_B <- ggplot(RTP.fit, aes(x=(1-m.)*100, y=redVC)) + 
 	xlab("feeding attempt survival (%)") + 
 	geom_line(aes(linetype=as.factor(p.))) +
-	scale_linetype_manual(values=c(1,2,3),name="LLIN attraction")+
+	scale_linetype_manual(values=c(1,2,3),name=legend_title)+
 	xlim(0,100) + ylim(-100,0)+
 	theme(aspect.ratio=1) +
 	theme(axis.title.y = element_blank())+
@@ -111,11 +112,9 @@ figure2 <- ggarrange(fig2_A + rremove("legend"),
 										 labels = c("A", "B"),
 										 ncol = 2, nrow = 1)
 
-annotate_figure(figure2,
-								bottom = text_grob("feeding attempt survival (%)"),
-								left = text_grob("% reduction in vectorial capacity", rot=90)#,
-								#fig.lab = "Figure 1", fig.lab.face = "bold"
-)
+figure2 <- annotate_figure(figure2,
+								bottom = text_grob("Feeding attempt survival (%)"),
+								left = text_grob(y_title, rot=90))
 
 #### figure 3 (escaping) ----
 d <- seq(0,1,by = 0.01)	  # diversion probability
@@ -130,7 +129,7 @@ RTP.fit$redVC <- -(1-RTP.fit$z)*100        # reduction in VC
 fig3_A <- ggplot(RTP.fit, aes(x=d.*100, y=redVC)) + 
 	xlab("Escaping (%)") + 
 	geom_line(aes(linetype=as.factor(p.))) +
-	scale_linetype_manual(values=c(2,3),name="LLIN attraction")+
+	scale_linetype_manual(values=c(2,3),name=legend_title)+
 	xlim(0,100) + ylim(-100,0)+
 	theme(aspect.ratio=1) +
 	theme(axis.title.y = element_blank())+
@@ -138,7 +137,7 @@ fig3_A <- ggplot(RTP.fit, aes(x=d.*100, y=redVC)) +
 
 # panel B
 p<- c(0.5,0.6,0.7)		      # preference for LLIN protected human (against unprotected human) 
-ref_pref <- 0.3							# preference value of the reference LLIN (inert = 0.5)
+ref_pref <- 0.36							# preference value of the reference LLIN (inert = 0.5)
 
 RTP.fit <- expand.grid(p.=p,d.=d)   # create table of all combinations of p and d
 RTP.fit <- mutate(RTP.fit, z = pmap_dbl(list(d.,p.),~fRTP(p=.y, D=.x, D2=.x, p2=ref_pref,FUN= FUN))) # calculate VC ratio
@@ -147,7 +146,7 @@ RTP.fit$redVC <- -(1-RTP.fit$z)*100        # reduction in VC
 fig3_B <- ggplot(RTP.fit, aes(x=d.*100, y=redVC)) + 
 	xlab("Escaping (%)") + 
 	geom_line(aes(linetype=as.factor(p.))) +
-	scale_linetype_manual(values=c(1,2,3),name="LLIN attraction")+
+	scale_linetype_manual(values=c(1,2,3),name=legend_title)+
 	xlim(0,100) + ylim(-100,0)+
 	theme(aspect.ratio=1) +
 	theme(axis.title.y = element_blank())+
@@ -162,11 +161,10 @@ figure3 <- ggarrange(fig3_A + rremove("legend"),
 										 labels = c("A", "B"),
 										 ncol = 2, nrow = 1)
 
-annotate_figure(figure3,
+figure3 <- annotate_figure(figure3,
 								bottom = text_grob("Escaping (%)"),
-								left = text_grob("% reduction in vectorial capacity", rot=90)#,
-								#fig.lab = "Figure 1", fig.lab.face = "bold"
-)
+								left = text_grob(y_title, rot=90))
+
 #### figure 4 (spatial-temporal avoidance) ----
 pi <- seq(0,1,by = 0.01)	  # proportion of exposure to bite during which LLIN is in use
 # panel A
@@ -180,7 +178,7 @@ RTP.fit$redVC <- -(1-RTP.fit$z)*100        # reduction in VC
 fig4_A <- ggplot(RTP.fit, aes(x=(1-pi.)*100, y=redVC)) + 
 	xlab("Spatial-temporal avoidance (%)") + 
 	geom_line(aes(linetype=as.factor(p.))) +
-	scale_linetype_manual(values=c(2,3),name="LLIN attraction")+
+	scale_linetype_manual(values=c(2,3),name=legend_title)+
 	xlim(0,100) + ylim(-100,0)+
 	theme(aspect.ratio=1) +
 	theme(axis.title.y = element_blank())+
@@ -189,8 +187,8 @@ fig4_A <- ggplot(RTP.fit, aes(x=(1-pi.)*100, y=redVC)) +
 # panel B
 p<- c(0.5,0.6,0.7)		      # preference for LLIN protected human (against unprotected human) 
 pi <- seq(0,1,by = 0.01)	  # 
-ref_pref <- 0.3							# preference value of the reference LLIN (inert = 0.5)
-FUN <- VLAIB                # function used to calculate vectorial capacity
+ref_pref <- 0.36							# preference value of the reference LLIN (inert = 0.5)
+FUN <- IC                # function used to calculate vectorial capacity
 
 RTP.fit <- expand.grid(p.=p,pi.=pi)   # create table of all combinations of p and d
 RTP.fit <- mutate(RTP.fit, z = pmap_dbl(list(pi.,p.),~fRTP(p=.y, pi=.x, pi2=.x, p2=ref_pref,FUN= FUN))) # calculate VC ratio
@@ -199,7 +197,7 @@ RTP.fit$redVC <- -(1-RTP.fit$z)*100        # reduction in VC
 fig4_B <- ggplot(RTP.fit, aes(x=(1-pi.)*100, y=redVC)) + 
 	xlab("Spatial-temporal avoidance (%)") + 
 	geom_line(aes(linetype=as.factor(p.))) +
-	scale_linetype_manual(values=c(1,2,3),name="LLIN attraction")+
+	scale_linetype_manual(values=c(1,2,3),name=legend_title)+
 	xlim(0,100) + ylim(-100,0)+
 	theme(aspect.ratio=1) +
 	theme(axis.title.y = element_blank())+
@@ -214,11 +212,9 @@ figure4 <- ggarrange(fig4_A + rremove("legend"),
 										 labels = c("A", "B"),
 										 ncol = 2, nrow = 1)
 
-annotate_figure(figure4,
+figure4 <- annotate_figure(figure4,
 								bottom = text_grob("Spatial-temporal avoidance (%)"),
-								left = text_grob("% reduction in vectorial capacity", rot=90)#,
-								#fig.lab = "Figure 1", fig.lab.face = "bold"
-)
+								left = text_grob(y_title, rot=90))
 
 #### figure 5 (kdr dynamics) ----
 #### parameters (only based on pre-bite mortality)
@@ -227,7 +223,7 @@ m2p_kdr     <- c(0.005,0.005,0.005) # post-bite mortality when faced to an LLIN 
 N.gen <- 100 												# nb of generations to simulate
 
 # create a dataframe with different combinations of preference (Pllin) per genotypes
-df_pref <- as.data.frame(matrix(rep(c(0.7,0.5,0.3),3), 3,3))  # same pref. value for all genotypes, various level of preference (attraction, neutral, deterrence)
+df_pref <- as.data.frame(matrix(rep(c(0.6,0.5,0.36),3), 3,3))  # same pref. value for all genotypes, various level of preference (attraction, neutral, deterrence)
 df_pref[4,] <- c(0.6,0.5,0.5)																  # only RR genotype attracted (as in Poriciani et. al 2017)
 
 # loop that calculate relative fitness for each combination of preference and simulate kdr dynamic accordingly
@@ -253,7 +249,8 @@ figure5 <- ggplot(df_kdr, aes(x=X1.N.gen-1, y=fkdr)) +
 	xlim(0,25) + 
 	theme(aspect.ratio=1) 
 
-figure5
+
+
 
 #### extraction of values of interest from the simulations (fig 1 to 5) ----
 
@@ -265,11 +262,11 @@ fig1_B$data %>% group_by(p.) %>% summarise(min=min(redVC)) -> minVC
 fig1_B$data %>% filter(redVC %in% minVC$min)
 
 ## search reduction in transmission value for survival set to 0 (no resistance)
-fig2_A$data %>% filter(m. == 0)
-fig2_B$data %>% filter(m. == 0)
-## search reduction in transmission value for survival set to 1 (max resistance)
 fig2_A$data %>% filter(m. == 1)
 fig2_B$data %>% filter(m. == 1)
+## search reduction in transmission value for survival set to 1 (max resistance)
+fig2_A$data %>% filter(m. == 0)
+fig2_B$data %>% filter(m. == 0)
 
 ## search reduction in transmission value for escaping set to 0 (no quantitative bahavioral resistance)
 fig3_A$data %>% filter(d. == 0)
@@ -279,8 +276,8 @@ fig3_A$data %>% filter(d. == 1)
 fig3_B$data %>% filter(d. == 1)
 
 ## search reduction in transmission value for spatial-temporal avoidance set to 0 (no qualitative bahavioral resistance)
-fig4_A$data %>% filter(pi. == 0.5)
-fig4_B$data %>% filter(pi. == 0.5)
+fig4_A$data %>% filter(pi. == 1)
+fig4_B$data %>% filter(pi. == 1)
 ## search reduction in transmission value for spatial-temporal avoidance set to 0.5 (50 % of exposure to bite occurs when LLIN are not in use)
 fig4_A$data %>% filter(pi. == 0.5)
 fig4_B$data %>% filter(pi. == 0.5)
@@ -289,7 +286,7 @@ fig4_B$data %>% filter(pi. == 0.5)
 figure5$data %>% group_by(scn) %>% summarise(val = which.min(abs(fkdr-0.8)))
 
 
-#### Figure X plot preference value recorded by EHT in nature from two meta-analysis studies ----
+#### Supplementary Figure 1 plot preference value recorded by EHT in nature from two meta-analysis studies ----
 # calculate prefernce value from field data
 # from EHT in Moiroux et al. 2017, Plos One
 Data_moiroux <- read.delim("data/Data_moiroux.txt")
@@ -316,21 +313,30 @@ Data_strode %>%
 Data_pref <- rbind(Data_pref_moiroux, Data_pref_strode)
 
 # plot
-qplot( x=study , y=pLLIN , data=Data_pref , geom=c("boxplot","jitter") ,  ylab="Preference for treated net (pLLIN)")
+supp_fig1 <- qplot( x=study , y=pLLIN , data=Data_pref , geom=c("boxplot","jitter") ,  ylab="Preference for treated net (pLLIN)")
 
-#### Figure X plot Diversion, pre-bite and post-bite mortality value from Moiroux et al. 2017 ----
+# determine reference value of preference for deterrent LLIN (mean of pref among ITN that were significantly deterrent in Moiroux et al. 2017)
+Data_deterence <- read.delim("data/Data_Figures2_Moiroux.txt")
+Data_deterence %>% 
+	filter(IC_high < 1) %>%	       # select only significantly deterent ITNs
+	mutate(pLLIN=RR/(RR+1)) %>%    # convert Rate-ratio to preference values
+	summarise(mean= mean(pLLIN)) %>%
+	round(2)-> pLLIN_ref_det	 # compute the mean preference value
+
+#### Supplementary Figure 2 plot Diversion, pre-bite and post-bite mortality value from Moiroux et al. 2017 ----
 #### justify baseline value (m1, m2, D) from moiroux 2017 :
 Data_moiroux <- read.delim("data/Data_moiroux.txt")	
 
 Data_moiroux %>%
 	dplyr::mutate(m1 = Tot_D_unfd / Total_unfd) %>% 	       # calculate pre-bite mortality
 	dplyr::mutate(m2 = Tot_D_fed / Total_bfed) %>%  	       # calculate post-bite mortality
-	dplyr::mutate(D = Tot_L_unfd / total) -> Data_moiroux2 
-Data_moiroux2 %>%   	           # calculate Diversion rate
-	group_by(ITN) %>% 																			 # group by type of tretament (ITN, CTN or control)
-	summarise_at(c("m1","m2","D"),median, na.rm=TRUE) # calculate mean values of m1, m2 and D
+	dplyr::mutate(D = Tot_L_unfd / total) -> Data_moiroux2   # calculate Diversion rate
 
+Data_moiroux2 %>%   	           
+	group_by(ITN) %>% 																# group by type of tretament (ITN, CTN or control)
+	summarise_at(c("m1","m2","D"),median, na.rm=TRUE) # calculate means of m1, m2 and D
 
+# prepare data for ploting
 Data_moiroux2 %>% 
 	select(ttmt, ITN, m1, m2, D) %>%
 	gather("m1","m2","D", key ="parameter", value = "value") -> plot_parameters
@@ -341,6 +347,7 @@ plot_parameters %>%
 plot_parameters %>%
 	filter(ITN == "ITN") -> plot_param_ITN
 
+#plot
 fig_param_A <- ggplot(plot_param_UTN, aes(x=parameter, y=value, fill=parameter)) +
 	geom_boxplot(alpha=0.4) +
 	geom_jitter()+

@@ -16,7 +16,6 @@ FUN <- VLAIB
 fig_cov <- function(ref_pref,a,b){
 RTP.fit <- expand.grid(x=a,y=b)
 for (i in 1:length(RTP.fit$x)){
-  #RTP.fit$z1[i] <- fRTP(p=RTP.fit$x[i],Ch=RTP.fit$y[i],Ch2=RTP.fit$y[i],p2=ref_pref,FUN=VC_bincoef)
   RTP.fit$z2[i] <- fRTP(100000, p=RTP.fit$x[i],Uh=RTP.fit$y[i],Uh2=RTP.fit$y[i],p2=ref_pref,FUN=FUN)
 }
 

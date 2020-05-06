@@ -1,4 +1,4 @@
-#' `VLAIB` return the average number of infectious bites that a vector gives according to a behavior and mortality model
+#' `IC` return the individual vectorial capacity (average number of infectious bites that a vector gives according to a behavior and mortality model)
 #'
 #' @param nsim unused but required argument, for compatibility / comparison with other function (ex: VLAIB_IBM)
 #' @param S baseline survival rate
@@ -22,10 +22,10 @@
 #' @export
 #'
 #' @examples
-#' VLAIB()
-#' VLAIB(Ih = 0.1)
-#' VLAIB()["VLAIB"]
-VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.44, Dp= 0.31,m1u = 0.05, m1p = 0.6, m2u = 0.005, m2p = 0.28, 
+#' IC()
+#' IC(Ih = 0.1)
+#' IC()["IC"]
+IC <- function(nsim=1000, S = 0.9, g = 3, Du = 0.44, Dp= 0.31,m1u = 0.05, m1p = 0.6, m2u = 0.005, m2p = 0.28, 
 									Nh = 1000, Uh = 0.6, pi = 0.9, Pllin = 0.5, k = 0.1, n = 11, Ih = 0.5){
   
   ## proba of encountering an unprotected or LLIN protected human
@@ -89,34 +89,33 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.44, Dp= 0.31,m1u = 0.05, m1p
   Term4 <- Term1*Term3	       # Term3 gives the number of possible orders for each combinaison of (i) diversions and ((n-g-i)/g) feeds
   Sl <- Sf * sum(Term4)				 # Proba that a newly infected vector will survive to HS state as an infectious vector - Expression (26)
   
-  VLAIB = Pl*Sl*BA						 # Vector average lifetime infectious bites (= individual Vector capacity) - Expression (27)
+  IC = Pl*Sl*BA						 # Vector average lifetime infectious bites (= individual Vector capacity) - Expression (27)
   
   ### number of oviposition events - can be used as a fitness indicators in a genetic/evolution model - Expression (30)
   OvA <- (1/(1-(PfA*Sf)))-1    # Average number of oviposition which a HS vector will survive to give (geometric series of first term 1 and reason Sf*Pfa, decreased by 1)
   
-  results <- c(Eu, Ep, Pd, Sd, Pf_u, Pf_p, Pf, F_u, Sf, Sl, PfA, BA, OvA, Pl, VLAIB)
-  names(results) <- c("Eu", "Ep", "Pd", "Sd", "Pf_u", "Pf_p", "Pf", "F_u", "Sf", "Sl", "PfA", "BA","OvA", "Pl", "VLAIB")
+  results <- c(Eu, Ep, Pd, Sd, Pf_u, Pf_p, Pf, F_u, Sf, Sl, PfA, BA, OvA, Pl, IC)
+  names(results) <- c("Eu", "Ep", "Pd", "Sd", "Pf_u", "Pf_p", "Pf", "F_u", "Sf", "Sl", "PfA", "BA","OvA", "Pl", "IC")
   return(results)
 }
 
 
 # function to calculate RTP (Relative transmission potential)
-#' `fRTP` return the relative transmission potetntial of a scenario against another taken as baseline. It is the ratio of VLAIB
+#' `fRTP` return the relative transmission potetntial of a scenario against another taken as baseline. It is the ratio of IC
 #' between to scenarii. It can use various model that are given as `FUN` argument
 #'
 #' @param nsim number of simulation (used when FUN is model that used simulation)
-#' @param m m1p: pre-bite feeding related mortality probability when faced to un LLIN protected host (default = 0.72)
+#' @param m m1p: pre-bite feeding related mortality probability when faced to un LLIN protected host (default = 0.6)
 #' @param m2 m1p at baseline
 #' @param p Pllin: preference for LLIN protected humans (against unprotected humans) as recorded in a dual choice olfactometer (default = 0.5, i.e inert LLIN)
 #' @param p2 Pllin at baseline 
-#' @param D Diversion probability when entering a hut with LLIN (default = 0.3)
+#' @param D Diversion probability when entering a hut with LLIN (default = 0.31)
 #' @param D2 D2 at baseline
 #' @param Uh LLIN use rate in the population (default = 0.6)
 #' @param Uh2 Uh at baseline (default = 0.6)
 #' @param pi pi: proportion of exposure to bite that occurs during which LLIN is in use (default = 0.9)
 #' @param pi2 pi at baseline (default = 0.9)
-#' @param FUN the function used to calculate VLAIB in both scenarii, the average number of infectious bites that a vector gives according to a behavior and mortality model
-#' @param fu fi1_u: successful feeding probability of pre-bite survivors (default = 0.55)
+#' @param FUN the function used to calculate IC in both scenarii, the average number of infectious bites that a vector gives according to a behavior and mortality model (default=IC)
 #'
 #' @return the value of Relative transmission potential (RTP)
 #' @export
@@ -124,9 +123,9 @@ VLAIB <- function(nsim=1000, S = 0.9, g = 3, Du = 0.44, Dp= 0.31,m1u = 0.05, m1p
 #' @examples
 #' fRTP(Uh=0.8, Uh2=0.5)
 #' 
-fRTP <- function(nsim = 1000,m = 0.72, m2= 0.72, p = 0.5, p2 = 0.5, D = 0.3, D2= 0.3, Uh = 0.6, Uh2 = 0.6, pi = 0.9, pi2 = 0.9, FUN = VLAIB, fu = 0.55){
-  RTP <- FUN(nsim, m1p = m , Pllin = p , Dp = D , Uh = Uh , pi = pi)["VLAIB"] / 
-         FUN(nsim, m1p = m2, Pllin = p2, Dp = D2, Uh = Uh2, pi = pi2)["VLAIB"]
+fRTP <- function(nsim = 1000,m = 0.6, m2= 0.6, p = 0.5, p2 = 0.5, D = 0.31, D2= 0.31, Uh = 0.6, Uh2 = 0.6, pi = 0.9, pi2 = 0.9, FUN = IC){
+  RTP <- FUN(nsim, m1p = m , Pllin = p , Dp = D , Uh = Uh , pi = pi)["IC"] / 
+         FUN(nsim, m1p = m2, Pllin = p2, Dp = D2, Uh = Uh2, pi = pi2)["IC"]
   names(RTP) <- "RTP"
   return(RTP)
 }
