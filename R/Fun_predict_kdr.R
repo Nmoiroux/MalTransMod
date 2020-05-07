@@ -75,17 +75,17 @@ predict_kdr(W_F=c(1,0.8,0.66), W_M=c(0.67,1,0.55), N.gen=100)
 # selection on male and female occurs before mating
 #' Title
 #'
-#' @param q 
-#' @param W_F 
-#' @param W_M 
-#' @param N.gen 
-#' @param sex.ratio
+#' @param q allelic frequency in the initial population
+#' @param W_F vector of relative fitness in females for each genotype
+#' @param W_M vector of relative fitness in males for each genotype
+#' @param N.gen number of generations to simulate
+#' @param sex.ratio ratio males/females at birth
 #'
 #' @return
 #' @export
 #'
 #' @examples
-predict_kdr4 <- function(q=0.1, W_F=c(1,1,1), W_M=c(0.67,1,0.55), N.gen=100, sex.ratio = 0.5){
+predict_kdr4 <- function(q=0.1, W_F=c(1,1,1), W_M=c(0.67,1,0.55), N.gen=100, sex.ratio = 1){
   
   # initialise first population (hardy-weinberg equilibrium)
   p <- 1 - q
@@ -96,6 +96,9 @@ predict_kdr4 <- function(q=0.1, W_F=c(1,1,1), W_M=c(0.67,1,0.55), N.gen=100, sex
   RRm <- RRf		# frenquency RR males
   SSm <- SSf		# frequency SS males
   RSm <- RSf		# frequency RS males
+  
+  pF <- 1/(1+sex.ratio) # proportion of females at birth
+  pM <- 1 - pF          # proportion of males at birth
   
   #
   pop <- data.frame(RRf=RRf, RSf=RSf, SSf=SSf, RRm=RRm, RSm=RSm, SSm=SSm)
@@ -132,9 +135,12 @@ predict_kdr4 <- function(q=0.1, W_F=c(1,1,1), W_M=c(0.67,1,0.55), N.gen=100, sex
     
     # next generation genotype probabilities (taking into account sex ratio)
     
-    mRRf <- mRRm <- sex.ratio * mateRR
-    mSSf <- mSSm <- sex.ratio * mateSS
-    mRSf <- mRSm <- sex.ratio * mateRS
+    mRRf <- pF * mateRR
+    mRRm <- pM * mateRR
+    mSSf <- pF * mateSS
+    mSSm <- pM * mateSS
+    mRSf <- pF * mateRS
+    mRSm <- pM * mateRS
     
     # next generation normalised genotype frequencies per sex
     
